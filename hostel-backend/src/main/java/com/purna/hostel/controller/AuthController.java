@@ -146,22 +146,27 @@ public class AuthController {
                     .body(Map.of("error", "User not found"));
         }
 
-
         RoleName roleName = user.getRoles()
                 .iterator()
                 .next()
-                .getName(); // ✅ now enum
+                .getName();
 
         String token = jwtUtils.generateToken(
                 user.getUsername(),
                 roleName.name()
         );
 
+        // ✅ Return FULL USER DATA including ID
         return ResponseEntity.ok(Map.of(
                 "token", token,
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "role", roleName.name()
+                "user", Map.of(
+                        "id", user.getId(),
+                        "username", user.getUsername(),
+                        "email", user.getEmail(),
+                        "fullName", user.getFullName(),
+                        "role", roleName.name()
+                )
         ));
     }
+
 }

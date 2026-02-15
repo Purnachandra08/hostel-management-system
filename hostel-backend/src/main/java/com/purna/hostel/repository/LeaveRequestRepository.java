@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
     List<LeaveRequest> findByUserId(Long userId);
+    
+ // ✅ ADD THIS
+    long countByStatus(String status);
 }
+

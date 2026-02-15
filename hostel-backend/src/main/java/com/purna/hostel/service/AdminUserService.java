@@ -9,6 +9,7 @@ import com.purna.hostel.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -31,7 +32,7 @@ public class AdminUserService {
     // ==============================
     // 👑 CREATE ADMIN / WARDEN
     // ==============================
-    public String createUser(AdminCreateUserRequest request) {
+    public User createUser(AdminCreateUserRequest request) {
 
         // ❌ Admin cannot create students
         if (request.getRole() == RoleName.ROLE_STUDENT) {
@@ -51,8 +52,25 @@ public class AdminUserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRoles(Set.of(role));
 
-        userRepository.save(user);
+        return userRepository.save(user);
+    }
 
-        return request.getRole().name() + " created successfully";
+    // ==============================
+    // 📋 GET ALL WARDENS
+    // ==============================
+    public List<User> getAllWardens() {
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> user.getRoles()
+                        .stream()
+                        .anyMatch(role -> role.getName() == RoleName.ROLE_WARDEN))
+                .toList();
+    }
+
+    // ==============================
+    // 🗑 DELETE USER
+    // ==============================
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 }

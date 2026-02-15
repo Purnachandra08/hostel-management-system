@@ -34,19 +34,19 @@ public class WardenController {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-    // ✅ Dashboard summary for Warden
+    // =====================================================
+    // ✅ WARDEN DASHBOARD SUMMARY
+    // =====================================================
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> getWardenSummary() {
+    public ResponseEntity<?> getWardenSummary() {
+
         long totalStudents = userRepository.findAll().stream()
                 .filter(u -> u.getRoles() != null &&
                         u.getRoles().stream()
-                        .anyMatch(r -> r.getName() == RoleName.ROLE_STUDENT))
+                                .anyMatch(r -> r.getName() == RoleName.ROLE_STUDENT))
                 .count();
 
-        long pendingLeaves = leaveRequestRepository.findAll().stream()
-                .filter(lr -> "PENDING".equalsIgnoreCase(lr.getStatus()))
-                .count();
-
+        long pendingLeaves = leaveRequestRepository.countByStatus("PENDING");
         long totalComplaints = complaintRepository.count();
         long presentToday = attendanceRepository.countByDateAndStatus(LocalDate.now(), "PRESENT");
         long absentToday = attendanceRepository.countByDateAndStatus(LocalDate.now(), "ABSENT");
@@ -62,21 +62,32 @@ public class WardenController {
         return ResponseEntity.ok(summary);
     }
 
-    // ✅ Get all leave requests (with student details)
+    // =====================================================
+    // ✅ GET ALL LEAVES
+    // =====================================================
     @GetMapping("/leaves")
-    public ResponseEntity<List<Map<String, Object>>> getAllLeaves() {
-        List<Map<String, Object>> leavesWithDetails = leaveRequestRepository.findAll()
-                .stream()
-                .map(this::convertLeaveToMap)
-                .collect(Collectors.toList());
+    public ResponseEntity<?> getAllLeaves() {
+        try {
+            List<Map<String, Object>> leaves = leaveRequestRepository.findAll()
+                    .stream()
+                    .map(this::convertLeaveToMap)
+                    .collect(Collectors.toList());
 
-        return ResponseEntity.ok(leavesWithDetails);
+            return ResponseEntity.ok(leaves);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Failed to load leave requests"));
+        }
     }
 
-    // ✅ Get all pending leave requests (with student details)
+    // =====================================================
+    // ✅ GET PENDING LEAVES
+    // =====================================================
     @GetMapping("/leaves/pending")
-    public ResponseEntity<List<Map<String, Object>>> getPendingLeaves() {
-        List<Map<String, Object>> pendingLeaves = leaveRequestRepository.findAll().stream()
+    public ResponseEntity<?> getPendingLeaves() {
+        List<Map<String, Object>> pendingLeaves = leaveRequestRepository.findAll()
+                .stream()
                 .filter(lr -> "PENDING".equalsIgnoreCase(lr.getStatus()))
                 .map(this::convertLeaveToMap)
                 .collect(Collectors.toList());
@@ -84,35 +95,65 @@ public class WardenController {
         return ResponseEntity.ok(pendingLeaves);
     }
 
-    // ✅ Approve Leave
+    // =====================================================
+    // ✅ APPROVE LEAVE
+    // =====================================================
     @PostMapping("/leaves/{id}/approve")
-    public ResponseEntity<Map<String, String>> approveLeave(@PathVariable Long id) {
-        return updateLeaveStatus(id, "APPROVED", "✅ Leave approved successfully");
+    public ResponseEntity<?> approveLeave(@PathVariable Long id) {
+        return updateLeaveStatus(id, "APPROVED");
     }
 
-    // ✅ Reject Leave
+    // =====================================================
+    // ✅ REJECT LEAVE
+    // =====================================================
     @PostMapping("/leaves/{id}/reject")
-    public ResponseEntity<Map<String, String>> rejectLeave(@PathVariable Long id) {
-        return updateLeaveStatus(id, "REJECTED", "❌ Leave rejected successfully");
+    public ResponseEntity<?> rejectLeave(@PathVariable Long id) {
+        return updateLeaveStatus(id, "REJECTED");
     }
 
-    // ✅ JSON response for leave updates
-    private ResponseEntity<Map<String, String>> updateLeaveStatus(Long id, String status, String message) {
+    // =====================================================
+    // ✅ DELETE LEAVE (IMPORTANT – Angular uses this)
+    // =====================================================
+    @DeleteMapping("/leaves/{id}")
+    public ResponseEntity<?> deleteLeave(@PathVariable Long id) {
+        if (!leaveRequestRepository.existsById(id)) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("message", "Leave not found"));
+        }
+
+        leaveRequestRepository.deleteById(id);
+        return ResponseEntity.ok(Map.of("message", "Leave deleted successfully"));
+    }
+
+    // =====================================================
+    // ✅ UPDATE STATUS (COMMON METHOD)
+    // =====================================================
+    private ResponseEntity<?> updateLeaveStatus(Long id, String status) {
+
         Optional<LeaveRequest> leaveOpt = leaveRequestRepository.findById(id);
+
         if (leaveOpt.isEmpty()) {
-            return ResponseEntity.status(404).body(Map.of("message", "⚠️ Leave request not found"));
+            return ResponseEntity.status(404)
+                    .body(Map.of("message", "Leave request not found"));
         }
 
         LeaveRequest leave = leaveOpt.get();
         leave.setStatus(status);
         leaveRequestRepository.save(leave);
 
-        return ResponseEntity.ok(Map.of("message", message));
+        return ResponseEntity.ok(Map.of(
+                "message", "Leave status updated successfully",
+                "status", status
+        ));
     }
 
-    // ✅ Convert LeaveRequest to Map (DTO for frontend)
+    // =====================================================
+    // ✅ CONVERT LEAVE TO MAP (DTO)
+    // =====================================================
     private Map<String, Object> convertLeaveToMap(LeaveRequest leave) {
+
         Map<String, Object> map = new HashMap<>();
+
         map.put("id", leave.getId());
         map.put("type", leave.getType());
         map.put("fromDate", leave.getFromDate());
@@ -122,10 +163,19 @@ public class WardenController {
         map.put("appliedAt", leave.getAppliedAt());
 
         User user = leave.getUser();
+
         if (user != null) {
-            map.put("studentName", user.getFullName() != null ? user.getFullName() : user.getUsername());
+            map.put("studentName",
+                    user.getFullName() != null
+                            ? user.getFullName()
+                            : user.getUsername());
+
             map.put("email", user.getEmail());
-            map.put("roomNumber", user.getRoom() != null ? user.getRoom().getRoomNumber() : "N/A");
+
+            map.put("roomNumber",
+                    user.getRoom() != null
+                            ? user.getRoom().getRoomNumber()
+                            : "N/A");
         } else {
             map.put("studentName", "Unknown");
             map.put("roomNumber", "N/A");
@@ -134,25 +184,33 @@ public class WardenController {
         return map;
     }
 
-    // ✅ Get all complaints
+    // =====================================================
+    // ✅ GET ALL COMPLAINTS
+    // =====================================================
     @GetMapping("/complaints")
-    public ResponseEntity<List<Complaint>> getAllComplaints() {
-        List<Complaint> complaints = complaintRepository.findAll();
-        return ResponseEntity.ok(complaints);
+    public ResponseEntity<?> getAllComplaints() {
+        return ResponseEntity.ok(complaintRepository.findAll());
     }
 
-    // ✅ Resolve complaint
+    // =====================================================
+    // ✅ RESOLVE COMPLAINT
+    // =====================================================
     @PostMapping("/complaints/{id}/resolve")
-    public ResponseEntity<Map<String, String>> resolveComplaint(@PathVariable Long id) {
+    public ResponseEntity<?> resolveComplaint(@PathVariable Long id) {
+
         Optional<Complaint> complaintOpt = complaintRepository.findById(id);
+
         if (complaintOpt.isEmpty()) {
-            return ResponseEntity.status(404).body(Map.of("message", "⚠️ Complaint not found"));
+            return ResponseEntity.status(404)
+                    .body(Map.of("message", "Complaint not found"));
         }
 
         Complaint complaint = complaintOpt.get();
         complaint.setStatus("RESOLVED");
         complaintRepository.save(complaint);
 
-        return ResponseEntity.ok(Map.of("message", "🟢 Complaint marked as resolved successfully"));
+        return ResponseEntity.ok(
+                Map.of("message", "Complaint marked as resolved")
+        );
     }
 }

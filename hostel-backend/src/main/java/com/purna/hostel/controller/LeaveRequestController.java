@@ -4,10 +4,12 @@ import com.purna.hostel.entity.LeaveRequest;
 import com.purna.hostel.entity.User;
 import com.purna.hostel.service.LeaveRequestService;
 import com.purna.hostel.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,12 +24,20 @@ public class LeaveRequestController {
     @Autowired
     private UserRepository userRepository;
 
-    // ✅ Apply leave
-    @PostMapping("/apply/{userId}")
-    public ResponseEntity<?> applyLeave(@PathVariable Long userId, @RequestBody LeaveRequest leaveRequest) {
+    // =====================================================
+    // ✅ APPLY LEAVE (JWT BASED - NO userId in URL)
+    // =====================================================
+    @PostMapping("/apply")
+    public ResponseEntity<?> applyLeave(
+            @RequestBody LeaveRequest leaveRequest,
+            Principal principal
+    ) {
         try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("❌ User not found with ID: " + userId));
+            // 🔐 Get logged-in username from JWT
+            String username = principal.getName();
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("❌ User not found"));
 
             LeaveRequest savedLeave = leaveRequestService.applyLeave(user, leaveRequest);
 
@@ -37,6 +47,7 @@ public class LeaveRequestController {
                     "user", user.getUsername(),
                     "status", savedLeave.getStatus()
             ));
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of(
@@ -45,12 +56,21 @@ public class LeaveRequestController {
         }
     }
 
-    // ✅ Get all leaves of a specific user
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getUserLeaves(@PathVariable Long userId) {
+    // =====================================================
+    // ✅ GET MY LEAVES (JWT BASED)
+    // =====================================================
+    @GetMapping("/my-leaves")
+    public ResponseEntity<?> getMyLeaves(Principal principal) {
         try {
-            List<LeaveRequest> leaves = leaveRequestService.getLeaveRequestsByUser(userId);
+            String username = principal.getName();
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("❌ User not found"));
+
+            List<LeaveRequest> leaves = leaveRequestService.getLeaveRequestsByUser(user.getId());
+
             return ResponseEntity.ok(leaves);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", "Error fetching leaves: " + e.getMessage()
@@ -58,26 +78,29 @@ public class LeaveRequestController {
         }
     }
 
-    // ✅ Get all leaves (for warden approval panel)
+    // =====================================================
+    // ✅ GET ALL LEAVES (WARDEN / ADMIN)
+    // =====================================================
     @GetMapping("/all")
     public ResponseEntity<?> getAllLeaves() {
         try {
             List<LeaveRequest> allLeaves = leaveRequestService.getAllLeaveRequests();
 
-            // 🔹 Convert entity data into simplified JSON for frontend
             List<Map<String, Object>> formattedLeaves = allLeaves.stream()
                     .map(leave -> {
                         Map<String, Object> map = new HashMap<>();
                         map.put("id", leave.getId());
-                        map.put("studentName", leave.getUser() != null ? leave.getUser().getFullName() : "Unknown");
+                        map.put("studentName",
+                                leave.getUser() != null ? leave.getUser().getFullName() : "Unknown");
                         map.put("roomNumber",
                                 leave.getUser() != null && leave.getUser().getRoom() != null
                                         ? leave.getUser().getRoom().getRoomNumber()
                                         : "N/A"
                         );
-                        // ✅ FIX: Ensure correct date mapping
-                        map.put("fromDate", leave.getFromDate() != null ? leave.getFromDate().toString() : "N/A");
-                        map.put("toDate", leave.getToDate() != null ? leave.getToDate().toString() : "N/A");
+                        map.put("fromDate",
+                                leave.getFromDate() != null ? leave.getFromDate().toString() : "N/A");
+                        map.put("toDate",
+                                leave.getToDate() != null ? leave.getToDate().toString() : "N/A");
                         map.put("reason", leave.getReason());
                         map.put("status", leave.getStatus());
                         map.put("type", leave.getType());
@@ -86,6 +109,7 @@ public class LeaveRequestController {
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(formattedLeaves);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of(
@@ -94,19 +118,24 @@ public class LeaveRequestController {
         }
     }
 
-    // ✅ Update leave status (approve / reject)
+    // =====================================================
+    // ✅ UPDATE LEAVE STATUS
+    // =====================================================
     @PutMapping("/update-status/{leaveId}")
     public ResponseEntity<?> updateLeaveStatus(
             @PathVariable Long leaveId,
             @RequestParam String status
     ) {
         try {
-            LeaveRequest updated = leaveRequestService.updateLeaveStatus(leaveId, status.toUpperCase());
+            LeaveRequest updated =
+                    leaveRequestService.updateLeaveStatus(leaveId, status.toUpperCase());
+
             return ResponseEntity.ok(Map.of(
                     "message", "✅ Leave status updated successfully",
                     "leaveId", leaveId,
                     "newStatus", updated.getStatus()
             ));
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of(
