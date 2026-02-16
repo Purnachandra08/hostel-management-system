@@ -1,13 +1,11 @@
 package com.purna.hostel.controller;
 
 import com.purna.hostel.entity.LeaveRequest;
-import com.purna.hostel.entity.Complaint;
-import com.purna.hostel.entity.RoleName;
 import com.purna.hostel.entity.User;
-import com.purna.hostel.repository.LeaveRequestRepository;
-import com.purna.hostel.repository.ComplaintRepository;
-import com.purna.hostel.repository.UserRepository;
 import com.purna.hostel.repository.AttendanceRepository;
+import com.purna.hostel.repository.ComplaintRepository;
+import com.purna.hostel.repository.LeaveRequestRepository;
+import com.purna.hostel.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,188 +27,109 @@ public class WardenController {
     private ComplaintRepository complaintRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private AttendanceRepository attendanceRepository;
 
-    // =====================================================
-    // ✅ WARDEN DASHBOARD SUMMARY
-    // =====================================================
-    @GetMapping("/dashboard")
-    public ResponseEntity<?> getWardenSummary() {
+    @Autowired
+    private UserRepository userRepository;
 
-        long totalStudents = userRepository.findAll().stream()
-                .filter(u -> u.getRoles() != null &&
-                        u.getRoles().stream()
-                                .anyMatch(r -> r.getName() == RoleName.ROLE_STUDENT))
+    // ====================================
+    // ✅ DASHBOARD DATA
+    // ====================================
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getDashboardData() {
+
+        // Total students
+        long totalStudents = userRepository.count();
+
+        // Leaves pending
+        long pendingLeaves = leaveRequestRepository.findAll()
+                .stream()
+                .filter(l -> "PENDING".equalsIgnoreCase(l.getStatus()))
                 .count();
 
-        long pendingLeaves = leaveRequestRepository.countByStatus("PENDING");
+        // Total complaints
         long totalComplaints = complaintRepository.count();
-        long presentToday = attendanceRepository.countByDateAndStatus(LocalDate.now(), "PRESENT");
-        long absentToday = attendanceRepository.countByDateAndStatus(LocalDate.now(), "ABSENT");
 
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("wardenName", "Warden");
-        summary.put("totalStudents", totalStudents);
-        summary.put("pendingLeaves", pendingLeaves);
-        summary.put("complaints", totalComplaints);
-        summary.put("presentToday", presentToday);
-        summary.put("absentToday", absentToday);
+        // Present & Absent Today
+        LocalDate today = LocalDate.now();
+        long presentToday = attendanceRepository.countByDateAndStatus(today, "PRESENT");
+        long absentToday = attendanceRepository.countByDateAndStatus(today, "ABSENT");
 
-        return ResponseEntity.ok(summary);
+        Map<String, Object> dashboard = new HashMap<>();
+        dashboard.put("wardenName", "Warden John"); // Replace with actual logged-in warden if needed
+        dashboard.put("totalStudents", totalStudents);
+        dashboard.put("pendingLeaves", pendingLeaves);
+        dashboard.put("complaints", totalComplaints);
+        dashboard.put("presentToday", presentToday);
+        dashboard.put("absentToday", absentToday);
+
+        return ResponseEntity.ok(dashboard);
     }
 
-    // =====================================================
+    // ====================================
     // ✅ GET ALL LEAVES
-    // =====================================================
+    // ====================================
     @GetMapping("/leaves")
     public ResponseEntity<?> getAllLeaves() {
-        try {
-            List<Map<String, Object>> leaves = leaveRequestRepository.findAll()
-                    .stream()
-                    .map(this::convertLeaveToMap)
-                    .collect(Collectors.toList());
 
-            return ResponseEntity.ok(leaves);
+        List<Map<String, Object>> leaves =
+                leaveRequestRepository.findAll()
+                        .stream()
+                        .map(leave -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("id", leave.getId());
+                            map.put("type", leave.getType());
+                            map.put("fromDate", leave.getFromDate());
+                            map.put("toDate", leave.getToDate());
+                            map.put("reason", leave.getReason());
+                            map.put("status", leave.getStatus());
 
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("error", "Failed to load leave requests"));
-        }
+                            if (leave.getUser() != null) {
+                                map.put("studentName", leave.getUser().getFullName());
+                                map.put("email", leave.getUser().getEmail());
+                                map.put("roomNumber",
+                                        leave.getUser().getRoom() != null
+                                                ? leave.getUser().getRoom().getRoomNumber()
+                                                : "N/A"
+                                );
+                            }
+                            return map;
+                        })
+                        .collect(Collectors.toList());
+
+        return ResponseEntity.ok(leaves);
     }
 
-    // =====================================================
-    // ✅ GET PENDING LEAVES
-    // =====================================================
-    @GetMapping("/leaves/pending")
-    public ResponseEntity<?> getPendingLeaves() {
-        List<Map<String, Object>> pendingLeaves = leaveRequestRepository.findAll()
-                .stream()
-                .filter(lr -> "PENDING".equalsIgnoreCase(lr.getStatus()))
-                .map(this::convertLeaveToMap)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(pendingLeaves);
-    }
-
-    // =====================================================
+    // ====================================
     // ✅ APPROVE LEAVE
-    // =====================================================
+    // ====================================
     @PostMapping("/leaves/{id}/approve")
     public ResponseEntity<?> approveLeave(@PathVariable Long id) {
-        return updateLeaveStatus(id, "APPROVED");
+        LeaveRequest leave = leaveRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Leave not found"));
+        leave.setStatus("APPROVED");
+        leaveRequestRepository.save(leave);
+        return ResponseEntity.ok(Map.of("message", "Leave approved successfully"));
     }
 
-    // =====================================================
+    // ====================================
     // ✅ REJECT LEAVE
-    // =====================================================
+    // ====================================
     @PostMapping("/leaves/{id}/reject")
     public ResponseEntity<?> rejectLeave(@PathVariable Long id) {
-        return updateLeaveStatus(id, "REJECTED");
+        LeaveRequest leave = leaveRequestRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Leave not found"));
+        leave.setStatus("REJECTED");
+        leaveRequestRepository.save(leave);
+        return ResponseEntity.ok(Map.of("message", "Leave rejected successfully"));
     }
 
-    // =====================================================
-    // ✅ DELETE LEAVE (IMPORTANT – Angular uses this)
-    // =====================================================
+    // ====================================
+    // ✅ DELETE LEAVE
+    // ====================================
     @DeleteMapping("/leaves/{id}")
     public ResponseEntity<?> deleteLeave(@PathVariable Long id) {
-        if (!leaveRequestRepository.existsById(id)) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("message", "Leave not found"));
-        }
-
         leaveRequestRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "Leave deleted successfully"));
-    }
-
-    // =====================================================
-    // ✅ UPDATE STATUS (COMMON METHOD)
-    // =====================================================
-    private ResponseEntity<?> updateLeaveStatus(Long id, String status) {
-
-        Optional<LeaveRequest> leaveOpt = leaveRequestRepository.findById(id);
-
-        if (leaveOpt.isEmpty()) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("message", "Leave request not found"));
-        }
-
-        LeaveRequest leave = leaveOpt.get();
-        leave.setStatus(status);
-        leaveRequestRepository.save(leave);
-
-        return ResponseEntity.ok(Map.of(
-                "message", "Leave status updated successfully",
-                "status", status
-        ));
-    }
-
-    // =====================================================
-    // ✅ CONVERT LEAVE TO MAP (DTO)
-    // =====================================================
-    private Map<String, Object> convertLeaveToMap(LeaveRequest leave) {
-
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("id", leave.getId());
-        map.put("type", leave.getType());
-        map.put("fromDate", leave.getFromDate());
-        map.put("toDate", leave.getToDate());
-        map.put("reason", leave.getReason());
-        map.put("status", leave.getStatus());
-        map.put("appliedAt", leave.getAppliedAt());
-
-        User user = leave.getUser();
-
-        if (user != null) {
-            map.put("studentName",
-                    user.getFullName() != null
-                            ? user.getFullName()
-                            : user.getUsername());
-
-            map.put("email", user.getEmail());
-
-            map.put("roomNumber",
-                    user.getRoom() != null
-                            ? user.getRoom().getRoomNumber()
-                            : "N/A");
-        } else {
-            map.put("studentName", "Unknown");
-            map.put("roomNumber", "N/A");
-        }
-
-        return map;
-    }
-
-    // =====================================================
-    // ✅ GET ALL COMPLAINTS
-    // =====================================================
-    @GetMapping("/complaints")
-    public ResponseEntity<?> getAllComplaints() {
-        return ResponseEntity.ok(complaintRepository.findAll());
-    }
-
-    // =====================================================
-    // ✅ RESOLVE COMPLAINT
-    // =====================================================
-    @PostMapping("/complaints/{id}/resolve")
-    public ResponseEntity<?> resolveComplaint(@PathVariable Long id) {
-
-        Optional<Complaint> complaintOpt = complaintRepository.findById(id);
-
-        if (complaintOpt.isEmpty()) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("message", "Complaint not found"));
-        }
-
-        Complaint complaint = complaintOpt.get();
-        complaint.setStatus("RESOLVED");
-        complaintRepository.save(complaint);
-
-        return ResponseEntity.ok(
-                Map.of("message", "Complaint marked as resolved")
-        );
     }
 }

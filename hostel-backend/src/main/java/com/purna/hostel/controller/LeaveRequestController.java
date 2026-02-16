@@ -24,123 +24,39 @@ public class LeaveRequestController {
     @Autowired
     private UserRepository userRepository;
 
-    // =====================================================
-    // ✅ APPLY LEAVE (JWT BASED - NO userId in URL)
-    // =====================================================
+    // ====================================
+    // ✅ APPLY LEAVE
+    // ====================================
     @PostMapping("/apply")
     public ResponseEntity<?> applyLeave(
             @RequestBody LeaveRequest leaveRequest,
             Principal principal
     ) {
-        try {
-            // 🔐 Get logged-in username from JWT
-            String username = principal.getName();
 
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("❌ User not found"));
+        String username = principal.getName();
 
-            LeaveRequest savedLeave = leaveRequestService.applyLeave(user, leaveRequest);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-            return ResponseEntity.ok(Map.of(
-                    "message", "✅ Leave applied successfully!",
-                    "leaveId", savedLeave.getId(),
-                    "user", user.getUsername(),
-                    "status", savedLeave.getStatus()
-            ));
+        LeaveRequest saved =
+                leaveRequestService.applyLeave(user, leaveRequest);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", "Error applying leave: " + e.getMessage()
-            ));
-        }
+        return ResponseEntity.ok(saved);
     }
 
-    // =====================================================
-    // ✅ GET MY LEAVES (JWT BASED)
-    // =====================================================
+    // ====================================
+    // ✅ GET MY LEAVES
+    // ====================================
     @GetMapping("/my-leaves")
     public ResponseEntity<?> getMyLeaves(Principal principal) {
-        try {
-            String username = principal.getName();
 
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("❌ User not found"));
+        String username = principal.getName();
 
-            List<LeaveRequest> leaves = leaveRequestService.getLeaveRequestsByUser(user.getId());
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-            return ResponseEntity.ok(leaves);
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", "Error fetching leaves: " + e.getMessage()
-            ));
-        }
-    }
-
-    // =====================================================
-    // ✅ GET ALL LEAVES (WARDEN / ADMIN)
-    // =====================================================
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllLeaves() {
-        try {
-            List<LeaveRequest> allLeaves = leaveRequestService.getAllLeaveRequests();
-
-            List<Map<String, Object>> formattedLeaves = allLeaves.stream()
-                    .map(leave -> {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", leave.getId());
-                        map.put("studentName",
-                                leave.getUser() != null ? leave.getUser().getFullName() : "Unknown");
-                        map.put("roomNumber",
-                                leave.getUser() != null && leave.getUser().getRoom() != null
-                                        ? leave.getUser().getRoom().getRoomNumber()
-                                        : "N/A"
-                        );
-                        map.put("fromDate",
-                                leave.getFromDate() != null ? leave.getFromDate().toString() : "N/A");
-                        map.put("toDate",
-                                leave.getToDate() != null ? leave.getToDate().toString() : "N/A");
-                        map.put("reason", leave.getReason());
-                        map.put("status", leave.getStatus());
-                        map.put("type", leave.getType());
-                        return map;
-                    })
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(formattedLeaves);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", "Error fetching all leaves: " + e.getMessage()
-            ));
-        }
-    }
-
-    // =====================================================
-    // ✅ UPDATE LEAVE STATUS
-    // =====================================================
-    @PutMapping("/update-status/{leaveId}")
-    public ResponseEntity<?> updateLeaveStatus(
-            @PathVariable Long leaveId,
-            @RequestParam String status
-    ) {
-        try {
-            LeaveRequest updated =
-                    leaveRequestService.updateLeaveStatus(leaveId, status.toUpperCase());
-
-            return ResponseEntity.ok(Map.of(
-                    "message", "✅ Leave status updated successfully",
-                    "leaveId", leaveId,
-                    "newStatus", updated.getStatus()
-            ));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", "Error updating status: " + e.getMessage()
-            ));
-        }
+        return ResponseEntity.ok(
+                leaveRequestService.getLeaveRequestsByUser(user.getId())
+        );
     }
 }
