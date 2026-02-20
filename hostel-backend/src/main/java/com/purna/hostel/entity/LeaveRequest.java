@@ -19,7 +19,6 @@ public class LeaveRequest {
     @Column(nullable = false)
     private String type;
 
-    // ✅ Proper date format for frontend compatibility
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "from_date", nullable = false)
     private LocalDate fromDate;
@@ -37,13 +36,24 @@ public class LeaveRequest {
     @Column(name = "applied_at", nullable = false, updatable = false)
     private LocalDateTime appliedAt = LocalDateTime.now();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // ✅ NEW FIELD (IMPORTANT)
+    @Column(name = "gate_pass_path")
+    private String gatePassPath;
+
+    // ✅ NEW FIELD
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
     private User user;
 
-    // === Getters & Setters ===
+    // ========================
+    // GETTERS & SETTERS
+    // ========================
+
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
@@ -61,7 +71,12 @@ public class LeaveRequest {
     public void setStatus(String status) { this.status = status; }
 
     public LocalDateTime getAppliedAt() { return appliedAt; }
-    public void setAppliedAt(LocalDateTime appliedAt) { this.appliedAt = appliedAt; }
+
+    public String getGatePassPath() { return gatePassPath; }
+    public void setGatePassPath(String gatePassPath) { this.gatePassPath = gatePassPath; }
+
+    public LocalDateTime getApprovedAt() { return approvedAt; }
+    public void setApprovedAt(LocalDateTime approvedAt) { this.approvedAt = approvedAt; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

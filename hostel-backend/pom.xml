@@ -82,6 +82,20 @@
     <scope>runtime</scope>
 </dependency>
 
+		<!-- iText PDF Kernel -->
+<dependency>
+    <groupId>com.itextpdf</groupId>
+    <artifactId>kernel</artifactId>
+    <version>7.2.5</version>
+</dependency>
+
+<!-- iText PDF Layout -->
+<dependency>
+    <groupId>com.itextpdf</groupId>
+    <artifactId>layout</artifactId>
+    <version>7.2.5</version>
+</dependency>
+
 
         <!-- Lombok (for getters, setters, constructors) -->
         <dependency>
