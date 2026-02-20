@@ -1,0 +1,83 @@
+<!-- 🌿 Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">🏨 Hostel Management</div>
+    <div class="nav-links">
+      <a routerLink="/student" class="nav-btn">Dashboard</a>
+      <a routerLink="/student/book-room" class="nav-btn">Book Room</a>
+      <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
+      <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
+      <a routerLink="/student/view-profile" class="nav-btn">Profile</a>
+    </div>
+    <button class="nav-btn logout" (click)="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- 🌿 Page Content -->
+<div class="dashboard-container">
+
+  <h2 class="welcome">📄 My Leave Requests</h2>
+
+  <div *ngIf="loading" class="loading">
+    Loading leave requests...
+  </div>
+
+  <div *ngIf="!loading && leaves.length === 0" class="no-data">
+    No leave requests found.
+  </div>
+
+  <div class="table-wrapper" *ngIf="!loading && leaves.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Status</th>
+          <th>Approved At</th>
+          <th>Gate Pass</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let leave of leaves">
+          <td>{{ leave.type }}</td>
+          <td>{{ leave.fromDate }}</td>
+          <td>{{ leave.toDate }}</td>
+
+          <td>
+            <span 
+              class="status"
+              [ngClass]="{
+                'pending': leave.status === 'PENDING',
+                'approved': leave.status === 'APPROVED',
+                'rejected': leave.status === 'REJECTED'
+              }">
+              {{ leave.status }}
+            </span>
+          </td>
+
+          <td>
+            {{ leave.approvedAt ? (leave.approvedAt | date:'medium') : '-' }}
+          </td>
+
+          <td>
+            <button 
+              *ngIf="leave.status === 'APPROVED'"
+              (click)="downloadGatePass(leave.id)"
+              class="download-btn">
+              Download
+            </button>
+            <span *ngIf="leave.status !== 'APPROVED'">-</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  <p>© 2025 Hostel Management System | All Rights Reserved</p>
+</footer>

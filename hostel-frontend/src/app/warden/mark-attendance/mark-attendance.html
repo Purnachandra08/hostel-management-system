@@ -1,0 +1,84 @@
+<!-- 🌿 Navbar (same style as Warden Dashboard) -->
+<nav class="navbar">
+  <div class="logo">🏫 Hostel Warden Panel</div>
+  <ul class="nav-links">
+    <li><a routerLink="/warden">Dashboard</a></li>
+    <li><a routerLink="/warden/mark-attendance" class="active">Attendance</a></li>
+    <li><a routerLink="/warden/complaints">Complaints</a></li>
+    <li><a routerLink="/warden/leave-approval">Leaves</a></li>
+    <li><a (click)="logout()" class="logout-btn">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- 📋 Attendance Page -->
+<div class="dashboard-content">
+
+  <h2>📋 Mark Attendance</h2>
+  <p>Attendance Date: <strong>{{ todayDate }}</strong></p>
+
+  <!-- 📊 Attendance Summary -->
+  <div class="summary-cards">
+    <div class="card" style="border-top: 6px solid #3498db">
+      <h3>👨‍🎓 Total Students</h3>
+      <p>{{ totalStudents }}</p>
+    </div>
+
+    <div class="card" style="border-top: 6px solid #2ecc71">
+      <h3>✅ Present</h3>
+      <p>{{ presentCount }}</p>
+    </div>
+
+    <div class="card" style="border-top: 6px solid #e74c3c">
+      <h3>❌ Absent</h3>
+      <p>{{ absentCount }}</p>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="loading" class="loading">⏳ Loading students...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="message" class="success-msg">{{ message }}</div>
+
+  <!-- 📋 Attendance Table -->
+  <table *ngIf="students.length && !loading" class="attendance-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Student Name</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let s of students">
+        <td>{{ s.id }}</td>
+        <td>{{ s.fullName || s.username }}</td>
+        <td>
+          <span
+            [ngClass]="{
+              present: getStatus(s.id) === 'PRESENT',
+              absent: getStatus(s.id) === 'ABSENT'
+            }"
+          >
+            {{ getStatus(s.id) }}
+          </span>
+        </td>
+        <td>
+          <button class="present-btn" (click)="mark(s.id, 'PRESENT')">Present</button>
+          <button class="absent-btn" (click)="mark(s.id, 'ABSENT')">Absent</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Submit -->
+  <div class="submit-section" *ngIf="students.length && !loading">
+    <button class="submit-btn" (click)="submitAttendance()">💾 Submit Attendance</button>
+  </div>
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  © 2025 Hostel Management System | Warden Panel
+</footer>

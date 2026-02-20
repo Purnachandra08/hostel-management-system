@@ -1,0 +1,59 @@
+<!-- 🌿 Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">HostelEase</div>
+    <div class="nav-links">
+      <a routerLink="/student-dashboard" class="nav-btn">Dashboard</a>
+      <a routerLink="/apply-leave" class="nav-btn">Apply Leave</a>
+      <a routerLink="/complaints" class="nav-btn active">Complaints</a>
+      <a routerLink="/login" class="nav-btn logout">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 📝 Complaint Form Section -->
+<div class="complaints-container">
+  <h2>Raise a Complaint</h2>
+
+  <form (ngSubmit)="submitComplaint()" class="complaint-form">
+    <div class="form-group">
+      <label for="subject">Subject</label>
+      <input
+        id="subject"
+        type="text"
+        name="subject"
+        [(ngModel)]="complaint.subject"
+        placeholder="Enter complaint subject"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="complaint.description"
+        placeholder="Describe your issue..."
+        rows="4"
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Complaint</button>
+  </form>
+
+  <div *ngIf="complaintsList.length > 0" class="complaints-list">
+    <h3>Submitted Complaints</h3>
+    <div class="complaint-card" *ngFor="let c of complaintsList">
+      <h4>{{ c.subject }}</h4>
+      <p>{{ c.description }}</p>
+      <span class="date">{{ c.date | date: 'medium' }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  © 2025 HostelEase | Designed by Purna
+</footer>

@@ -1,0 +1,181 @@
+/* 🌿 General Page Style */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #f4fff7, #d9f8e3, #b9f0cc);
+  color: #1e2a23;
+  overflow-x: hidden;
+  padding-top: 80px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* 🌿 Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.8s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+}
+
+.navbar h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #28a745;
+  letter-spacing: 1px;
+  animation: fadeUp 1s ease;
+}
+
+.navbar nav a {
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 20px;
+  color: #14532d;
+  padding: 10px 20px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.navbar nav a:hover,
+.navbar nav a.active {
+  background: #eafff2;
+  transform: scale(1.05);
+}
+
+/* 🌿 Booking Form Container */
+.book-container {
+  max-width: 550px;
+  margin: 120px auto 80px auto;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.15);
+  animation: fadeUp 1s ease-in-out;
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-container:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25);
+}
+
+.book-container h2 {
+  text-align: center;
+  color: #14532d;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  animation: textGlow 2.5s infinite alternate;
+}
+
+/* 🌿 Form Elements */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+label {
+  font-weight: 600;
+  color: #166534;
+}
+
+select,
+input[type="date"] {
+  padding: 12px 14px;
+  border: 1px solid #c0eacb;
+  border-radius: 12px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: inset 0 1px 3px rgba(34, 197, 94, 0.1);
+}
+
+select:focus,
+input[type="date"]:focus {
+  border-color: #4ade80;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+/* 🌿 Button */
+button {
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 12px rgba(34, 197, 94, 0.4);
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 18px rgba(34, 197, 94, 0.5);
+}
+
+/* 🌿 Message Text */
+.message {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #14532d;
+  background: #eafff2;
+  border-radius: 8px;
+  padding: 10px;
+  animation: fadeIn 1s ease;
+}
+
+/* 🌿 Footer */
+.footer {
+  background: rgba(255, 255, 255, 0.9);
+  color: #14532d;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  animation: slideUp 1s ease;
+}
+
+/* 🌿 Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-80px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes textGlow {
+  from { text-shadow: 0 0 10px #4ade80; }
+  to { text-shadow: 0 0 20px #22c55e; }
+}

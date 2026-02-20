@@ -1,0 +1,79 @@
+<div class="navbar">
+  <div class="navbar-container">
+    <div class="logo">HostelEase</div>
+    <div class="nav-links">
+      <a routerLink="/home" routerLinkActive="active" class="nav-btn">Home</a>
+      <a routerLink="/book-room" routerLinkActive="active" class="nav-btn">Book Room</a>
+      <a routerLink="/apply-leave" routerLinkActive="active" class="nav-btn active">Apply Leave</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-btn">Profile</a>
+      <a routerLink="/logout" class="nav-btn">Logout</a>
+    </div>
+  </div>
+</div>
+
+<div class="apply-leave-container">
+  <h2>Apply for Leave</h2>
+
+  <form class="leave-form" (ngSubmit)="onSubmit()" #leaveForm="ngForm">
+
+    <div class="form-group">
+      <label>Leave Type</label>
+      <select name="type" [(ngModel)]="leave.type" required>
+        <option value="">Select Type</option>
+        <option value="CASUAL">Casual Leave</option>
+        <option value="MEDICAL">Medical Leave</option>
+        <option value="EMERGENCY">Emergency Leave</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>From Date</label>
+      <input 
+        type="date"
+        name="fromDate"
+        [(ngModel)]="leave.fromDate"
+        [min]="today"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label>To Date</label>
+      <input 
+        type="date"
+        name="toDate"
+        [(ngModel)]="leave.toDate"
+        [min]="leave.fromDate || today"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label>Reason</label>
+      <textarea
+        name="reason"
+        [(ngModel)]="leave.reason"
+        rows="3"
+        placeholder="Enter reason for leave"
+        required>
+      </textarea>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Submitting...' : 'Submit Leave Request' }}
+    </button>
+
+  </form>
+
+  <!-- ✅ NEW BUTTON ADDED HERE -->
+  <div class="status-btn-container">
+  <button (click)="goToMyLeaves()" class="status-btn">
+    Check Leave Status & Download Gatepass
+  </button>
+</div>
+
+  <p class="success-message" *ngIf="message">{{ message }}</p>
+  <p class="error-message" *ngIf="error">{{ error }}</p>
+</div>
+
+<footer class="footer">
+  © 2025 HostelEase | All Rights Reserved
+</footer>

@@ -1,0 +1,215 @@
+/* 🌿 General Layout */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #f4fff7, #d9f8e3, #b9f0cc);
+  color: #1e2a23;
+  overflow-x: hidden;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.admin-container {
+  min-height: 100vh;
+}
+
+/* 🌿 Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+  animation: slideDown 0.8s ease;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #28a745;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  color: #14532d;
+}
+
+.nav-links a:hover {
+  background: #eafff2;
+  transform: scale(1.05);
+}
+
+/* 🌿 Dashboard Section */
+.dashboard {
+  padding-top: 120px;
+  text-align: center;
+  animation: fadeUp 1s ease;
+}
+
+.dashboard h1 {
+  font-size: 2.2rem;
+  color: #14532d;
+  margin-bottom: 10px;
+  animation: textGlow 2.5s infinite alternate;
+}
+
+.welcome {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 50px;
+}
+
+/* 🌿 Cards Section */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  padding: 0 10%;
+  margin-bottom: 100px;
+}
+
+.card {
+  background: #ffffffd5;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(52, 211, 153, 0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25);
+}
+
+.card img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover img {
+  transform: scale(1.1);
+}
+
+.card h3 {
+  font-size: 1.3rem;
+  color: #166534;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #444;
+  font-size: 0.95rem;
+}
+
+/* 🌿 Footer (optional if needed later) */
+.footer {
+  background: rgba(255, 255, 255, 0.9);
+  color: #14532d;
+  text-align: center;
+  padding: 15px;
+  width: 100%;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  animation: slideUp 1s ease;
+}
+
+/* 🌿 Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-80px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes textGlow {
+  from { text-shadow: 0 0 10px #4ade80; }
+  to { text-shadow: 0 0 20px #22c55e; }
+}
+
+/* 🌿 Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 25px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .dashboard h1 {
+    font-size: 1.8rem;
+  }
+
+  .cards {
+    padding: 0 5%;
+    grid-template-columns: 1fr;
+  }
+}
+/* 🌿 Footer Styling */
+.footer {
+  background: rgba(255, 255, 255, 0.9);
+  color: #14532d;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  animation: slideUp 1s ease;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Footer Text Animation */
+.footer p {
+  margin: 0;
+  animation: fadeGlow 2.5s infinite alternate;
+}
+
+@keyframes fadeGlow {
+  from {
+    text-shadow: 0 0 10px #4ade80;
+  }
+  to {
+    text-shadow: 0 0 20px #22c55e;
+  }
+}

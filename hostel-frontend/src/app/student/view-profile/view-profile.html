@@ -1,0 +1,41 @@
+<!-- 🌟 Navbar -->
+<div class="navbar">
+  <div class="navbar-container">
+    <div class="logo">🏨 HostelEase</div>
+    <div class="nav-links">
+      <a routerLink="/student-dashboard" class="nav-btn">Dashboard</a>
+      <a routerLink="/book-room" class="nav-btn">Book Room</a>
+      <a routerLink="/view-profile" class="nav-btn active">View Profile</a>
+      <button class="nav-btn logout" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🌟 Profile Section -->
+<div class="profile-container">
+  <h2 class="title">👤 My Profile</h2>
+
+  <div class="profile-card">
+    <div class="profile-header">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+        alt="Profile"
+        class="profile-pic"
+      />
+      <h3>{{ studentName || 'Guest Student' }}</h3>
+      <p class="email">{{ email || 'N/A' }}</p>
+    </div>
+
+    <div class="profile-details">
+      <p><strong>🎓 Course:</strong> {{ course || 'Not Available' }}</p>
+      <p><strong>🏠 Room No:</strong> {{ roomNumber || 'Not Assigned' }}</p>
+      <p><strong>📞 Contact:</strong> {{ phone || 'N/A' }}</p>
+      <p><strong>📅 Joined On:</strong> {{ joinedDate || 'N/A' }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- 🌟 Footer -->
+<footer class="footer">
+  © 2025 HostelEase | All Rights Reserved
+</footer>

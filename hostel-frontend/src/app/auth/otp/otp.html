@@ -1,0 +1,42 @@
+<div class="otp-container">
+
+  <h2>🔐 Verify OTP</h2>
+
+  <p class="info">
+    Enter the OTP sent to your registered email
+  </p>
+
+  <form (ngSubmit)="verifyOtp()" #otpForm="ngForm">
+
+    <input
+      type="text"
+      name="otp"
+      [(ngModel)]="otp"
+      placeholder="Enter OTP"
+      maxlength="6"
+      required
+    />
+
+    <button type="submit" [disabled]="loading || !otpForm.valid">
+      {{ loading ? 'Verifying...' : 'Verify OTP' }}
+    </button>
+
+  </form>
+
+  <!-- Success -->
+  <p class="success" *ngIf="success">
+    ✅ {{ success }}
+  </p>
+
+  <!-- Error -->
+  <p class="error" *ngIf="error">
+    ❌ {{ error }}
+  </p>
+
+  <div class="actions">
+    <button class="link-btn" (click)="backToLogin()">
+      ← Back to Login
+    </button>
+  </div>
+
+</div>

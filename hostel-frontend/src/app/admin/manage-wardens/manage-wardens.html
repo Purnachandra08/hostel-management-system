@@ -1,0 +1,128 @@
+<div class="warden-container">
+
+  <!-- 🌿 Page Header -->
+  <h2>👑 Create Warden</h2>
+  <p class="subtitle">
+    Admin can create Warden accounts securely
+  </p>
+
+  <!-- 🧑‍🏫 Create Warden Form -->
+  <form (ngSubmit)="createWarden()" class="warden-form">
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input
+        type="text"
+        [(ngModel)]="warden.fullName"
+        name="fullName"
+        placeholder="Enter full name"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="email"
+        [(ngModel)]="warden.email"
+        name="email"
+        placeholder="Enter email"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input
+        type="text"
+        [(ngModel)]="warden.username"
+        name="username"
+        placeholder="Enter username"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        [(ngModel)]="warden.password"
+        name="password"
+        placeholder="Enter password"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Phone</label>
+      <input
+        type="text"
+        [(ngModel)]="warden.phone"
+        name="phone"
+        placeholder="Enter phone number"
+        required
+      />
+    </div>
+
+    <!-- 🔐 Role (Locked) -->
+    <div class="form-group">
+      <label>Role</label>
+      <input type="text" value="WARDEN" disabled />
+    </div>
+
+    <!-- ✅ Success Message -->
+    <p class="success" *ngIf="successMessage">
+      {{ successMessage }}
+    </p>
+
+    <!-- ❌ Error Message -->
+    <p class="error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </p>
+
+    <!-- 🚀 Submit Button -->
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Creating...' : 'Create Warden' }}
+    </button>
+
+  </form>
+
+  <!-- ================================================= -->
+  <!-- 📋 WARDENS LIST TABLE -->
+  <!-- ================================================= -->
+
+  <h2 class="table-title">🧑‍🏫 All Wardens</h2>
+
+  <table class="warden-table" *ngIf="wardens.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Phone</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let w of wardens">
+        <td>{{ w.id }}</td>
+        <td>{{ w.fullName }}</td>
+        <td>{{ w.email }}</td>
+        <td>{{ w.username }}</td>
+        <td>{{ w.phone }}</td>
+        <td>
+          <button class="delete-btn" (click)="deleteWarden(w.id)">
+            🗑 Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="empty" *ngIf="wardens.length === 0">
+    No wardens found.
+  </p>
+
+</div>

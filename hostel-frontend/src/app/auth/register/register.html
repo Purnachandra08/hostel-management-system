@@ -1,0 +1,90 @@
+<div class="register-page">
+  <div class="register-card">
+    <h2>Create Student Account</h2>
+    <p class="subtitle">Register as a student and verify via OTP</p>
+
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+
+      <!-- Full Name -->
+      <div class="form-group">
+        <input
+          type="text"
+          name="fullName"
+          placeholder="Full Name"
+          [(ngModel)]="model.fullName"
+          required
+        />
+      </div>
+
+      <!-- Username -->
+      <div class="form-group">
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          [(ngModel)]="model.username"
+          required
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          [(ngModel)]="model.email"
+          required
+        />
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone Number"
+          [(ngModel)]="model.phone"
+          required
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          [(ngModel)]="model.password"
+          required
+        />
+      </div>
+
+      <!-- Register Button -->
+      <button
+        type="submit"
+        class="register-btn"
+        [disabled]="loading || !registerForm.valid"
+      >
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
+
+    </form>
+
+    <!-- Success Message -->
+    <div class="status success" *ngIf="message">
+      {{ message }}
+    </div>
+
+    <!-- Error Message -->
+    <div class="status error" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <!-- Login Link -->
+    <div class="login-link">
+      Already have an account?
+      <a (click)="goToLogin()">Login</a>
+    </div>
+  </div>
+</div>

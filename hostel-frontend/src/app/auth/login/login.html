@@ -1,0 +1,61 @@
+<div class="login-container">
+
+  <h2>🔐 Login</h2>
+  <p class="subtitle">
+    Enter your username and password to receive OTP
+  </p>
+
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+
+    <!-- Username -->
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="credentials.username"
+        required
+        autocomplete="username"
+        placeholder="Enter username"
+      />
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="credentials.password"
+        required
+        autocomplete="current-password"
+        placeholder="Enter password"
+      />
+    </div>
+
+    <!-- Error Message -->
+    <div class="error" *ngIf="errorMessage">
+      ❌ {{ errorMessage }}
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      [disabled]="loading || !loginForm.valid"
+    >
+      {{ loading ? 'Sending OTP...' : 'Login & Send OTP' }}
+    </button>
+
+  </form>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>
+      Don’t have an account?
+      <a (click)="goToRegister()">Register</a>
+    </p>
+  </div>
+
+</div>

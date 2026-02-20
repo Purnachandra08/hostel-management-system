@@ -1,0 +1,62 @@
+<div class="admin-container">
+
+  <!-- 🌿 Navbar -->
+  <header class="navbar">
+    <div class="logo">🏫 HostelEase Admin</div>
+
+    <nav class="nav-links">
+      <a routerLink="/admin/manage-rooms">Manage Rooms</a>
+      <a routerLink="/admin/manage-students">Manage Students</a>
+      <a routerLink="/admin/manage-wardens">Manage Wardens</a>
+      <a routerLink="/landing">Logout</a>
+    </nav>
+  </header>
+
+  <!-- 🌿 Dashboard Overview -->
+  <section class="dashboard">
+    <h1>Admin Dashboard</h1>
+    <p class="welcome">
+      Welcome, Admin 👋 — manage rooms, students, and wardens efficiently.
+    </p>
+
+    <!-- 🌿 Cards Section -->
+    <div class="cards">
+
+      <!-- Manage Rooms -->
+      <div class="card manage" routerLink="/admin/manage-rooms">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/869/869869.png"
+          alt="Manage Rooms"
+        />
+        <h3>Manage Rooms</h3>
+        <p>Allocate, update, and view hostel rooms.</p>
+      </div>
+
+      <!-- Manage Students -->
+      <div class="card student" routerLink="/admin/manage-students">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png"
+          alt="Manage Students"
+        />
+        <h3>Manage Students</h3>
+        <p>View and update student information.</p>
+      </div>
+
+      <!-- Manage Wardens -->
+      <div class="card warden" routerLink="/admin/manage-wardens">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png"
+          alt="Manage Wardens"
+        />
+        <h3>Manage Wardens</h3>
+        <p>Add, update, and assign wardens to hostels.</p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  <p>© 2025 HostelEase | Designed with 💚 for Smart Hostel Management</p>
+</footer>
