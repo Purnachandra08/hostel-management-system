@@ -7,5 +7,7 @@ import java.util.List;
 
 @Repository
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
-    List<Complaint> findByUserId(Long userId);
+
+    // Fetch complaints by user ID (based on ManyToOne mapping)
+    List<Complaint> findByUser_Id(Long userId);
 }

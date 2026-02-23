@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';   // ✅ ADDED
 import { ComplaintService } from '../../services/complaint.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -16,7 +17,11 @@ export class Complaints implements OnInit {
   complaintsList: any[] = [];
   userId!: number;
 
-  constructor(private complaintService: ComplaintService, private auth: AuthService) {}
+  constructor(
+    private complaintService: ComplaintService,
+    private auth: AuthService,
+    private router: Router   // ✅ ADDED
+  ) {}
 
   ngOnInit() {
     const user = this.auth.getUser();
@@ -51,7 +56,7 @@ export class Complaints implements OnInit {
       next: () => {
         alert('✅ Complaint submitted successfully!');
         this.complaint = { subject: '', description: '' };
-        this.loadComplaints(); // reload list
+        this.loadComplaints();
       },
       error: (err) => {
         console.error('Error submitting complaint:', err);
@@ -59,4 +64,9 @@ export class Complaints implements OnInit {
       }
     });
   }
+
+  // ✅ NEW METHOD – Navigate to status page
+  goToMyComplaints() {
+  this.router.navigate(['/student/view-complaints']);
+}
 }

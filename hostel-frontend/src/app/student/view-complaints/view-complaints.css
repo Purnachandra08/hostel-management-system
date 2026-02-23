@@ -1,8 +1,9 @@
 /* ============ General Styles ============ */
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
+:host {
+  display: block;
+  min-height: 100vh;
   background: linear-gradient(to bottom right, #f4fff7, #d9f8e3, #b9f0cc);
+  font-family: 'Poppins', sans-serif;
   color: #1e2a23;
   overflow-x: hidden;
   animation: fadeIn 1s ease-in-out;
@@ -32,7 +33,6 @@ body {
   font-weight: 600;
   color: #28a745;
   letter-spacing: 1px;
-  animation: fadeUp 1s ease;
 }
 
 .nav-links {
@@ -62,121 +62,109 @@ body {
   box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
 }
 
-/* ============ Complaint Form ============ */
+/* ============ Container ============ */
 .complaints-container {
   margin-top: 120px;
-  padding: 40px 10%;
+  padding: 50px 8%;
   background: rgba(255, 255, 255, 0.85);
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
-  max-width: 800px;
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(34, 197, 94, 0.2);
+  max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
   animation: fadeUp 1s ease;
+  backdrop-filter: blur(12px);
+  margin-bottom: 120px; /* space for footer */
 }
 
 .complaints-container h2 {
   text-align: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   color: #166534;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
   animation: textGlow 2s infinite alternate;
 }
 
-.complaint-form .form-group {
-  margin-bottom: 20px;
-}
-
-.complaint-form label {
-  display: block;
-  font-weight: 600;
-  color: #14532d;
-  margin-bottom: 6px;
-}
-
-.complaint-form input,
-.complaint-form textarea {
+/* ============ Styled Table ============ */
+.styled-table {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #a7f3d0;
-  border-radius: 10px;
-  font-size: 1rem;
+  border-collapse: collapse;
+  border-radius: 18px;
   background: #ffffff;
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(52, 211, 153, 0.15);
+  overflow: hidden;
+  animation: fadeIn 1.2s ease;
 }
 
-.complaint-form input:focus,
-.complaint-form textarea:focus {
-  border-color: #22c55e;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
-  outline: none;
-}
-
-.submit-btn {
-  display: block;
-  width: 100%;
+.styled-table thead {
   background: linear-gradient(135deg, #4ade80, #16a34a);
   color: white;
-  padding: 14px 0;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.styled-table th {
+  padding: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+.styled-table td {
+  padding: 16px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
   transition: all 0.3s ease;
 }
 
-.submit-btn:hover {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  transform: translateY(-2px);
+.styled-table tbody tr:hover {
+  background: #f0fdf4;
+  transform: scale(1.01);
 }
 
-/* ============ Complaints List ============ */
-.complaints-list {
-  margin-top: 40px;
-  animation: fadeIn 1.5s ease-in-out;
+/* ============ Status Badge ============ */
+.status-badge {
+  padding: 7px 14px;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
 }
 
-.complaints-list h3 {
+/* Pending */
+.Pending {
+  background: #fef3c7;
+  color: #b45309;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+/* Approved */
+.Approved {
+  background: #d1fae5;
+  color: #065f46;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Rejected */
+.Rejected {
+  background: #fee2e2;
+  color: #991b1b;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ============ Empty Message ============ */
+.empty-msg {
   text-align: center;
-  color: #166534;
-  font-size: 1.6rem;
-  margin-bottom: 25px;
-}
-
-.complaint-card {
-  background: #ffffffc7;
-  border-radius: 15px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeUp 0.8s ease;
-}
-
-.complaint-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25);
-}
-
-.complaint-card h4 {
-  margin: 0;
-  color: #166534;
   font-size: 1.2rem;
-}
-
-.complaint-card p {
-  color: #333;
-  margin-top: 8px;
-  font-size: 0.95rem;
-}
-
-.date {
-  display: block;
-  margin-top: 10px;
-  font-size: 0.85rem;
-  color: #555;
-  text-align: right;
+  color: #166534;
+  padding: 25px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(34,197,94,0.1);
 }
 
 /* ============ Footer ============ */
@@ -192,25 +180,6 @@ body {
   font-size: 0.9rem;
   backdrop-filter: blur(10px);
   animation: slideUp 1s ease;
-}
-.status-btn {
-  display: block;
-  width: 100%;
-  margin-top: 15px;
-  background: linear-gradient(135deg, #4ade80, #16a34a);
-  color: white;
-  padding: 14px 0;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.05rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-  transition: all 0.3s ease;
-}
-
-.status-btn:hover {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  transform: translateY(-2px);
 }
 
 /* ============ Animations ============ */
@@ -238,4 +207,3 @@ body {
   from { text-shadow: 0 0 10px #4ade80; }
   to { text-shadow: 0 0 20px #22c55e; }
 }
-/* 🌿 Toast Notifications */

@@ -1,11 +1,10 @@
 package com.purna.hostel.service;
 
 import com.purna.hostel.entity.Complaint;
-import com.purna.hostel.entity.User;
 import com.purna.hostel.repository.ComplaintRepository;
-import com.purna.hostel.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -14,32 +13,42 @@ public class ComplaintService {
     @Autowired
     private ComplaintRepository complaintRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    // ✅ Submit new complaint
-    public Complaint submitComplaint(User user, Complaint complaint) {
-        complaint.setUser(user);
-        complaint.setUserId(user.getId()); // ensure consistency
-        complaint.setStatus("PENDING");
+    // ✅ Save complaint
+    public Complaint saveComplaint(Complaint complaint) {
         return complaintRepository.save(complaint);
     }
 
-    // ✅ Get complaints by user
+    // ✅ Get complaints by student ID
     public List<Complaint> getComplaintsByUser(Long userId) {
-        return complaintRepository.findByUserId(userId);
+        return complaintRepository.findByUser_Id(userId);
     }
 
-    // ✅ Get all complaints (Admin)
+    // ✅ Get all complaints (Warden/Admin)
     public List<Complaint> getAllComplaints() {
         return complaintRepository.findAll();
     }
 
-    // ✅ Update complaint status (Admin)
+    // ✅ Get complaint by ID
+    public Complaint getComplaintById(Long id) {
+        return complaintRepository.findById(id).orElse(null);
+    }
+
+    // ✅ Update complaint status
     public Complaint updateComplaintStatus(Long complaintId, String status) {
+
         Complaint complaint = complaintRepository.findById(complaintId)
-                .orElseThrow(() -> new RuntimeException("Complaint not found with ID: " + complaintId));
+                .orElse(null);
+
+        if (complaint == null) {
+            return null;
+        }
+
         complaint.setStatus(status);
         return complaintRepository.save(complaint);
+    }
+
+    // ✅ Delete complaint
+    public void deleteComplaint(Long id) {
+        complaintRepository.deleteById(id);
     }
 }

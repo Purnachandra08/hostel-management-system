@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "complaint")
 public class Complaint {
 
     @Id
@@ -12,20 +13,36 @@ public class Complaint {
     private Long id;
 
     private String subject;
-    private String description;
-    private String status = "PENDING";
-    private Long userId;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(length = 2000)
+    private String description;
+
+    private String status = "PENDING";
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_ref")
-    @JsonIgnoreProperties({"password", "email", "role"}) // Prevent sensitive data
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password", "role"})
     private User user;
+
+    // Auto set date before insert
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // Auto update date
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     // --- Getters & Setters ---
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getSubject() { return subject; }
     public void setSubject(String subject) { this.subject = subject; }
@@ -36,11 +53,9 @@ public class Complaint {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

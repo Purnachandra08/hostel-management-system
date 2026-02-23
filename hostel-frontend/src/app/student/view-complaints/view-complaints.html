@@ -1,0 +1,49 @@
+<!-- 🌿 Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">HostelEase</div>
+    <div class="nav-links">
+      <a routerLink="/student" class="nav-btn">Dashboard</a>
+      <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
+      <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
+      <a routerLink="/login" class="nav-btn logout">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 🌿 Main Container -->
+<div class="complaints-container">
+  <h2>My Complaint Status</h2>
+
+  <table *ngIf="complaintsList.length > 0" class="styled-table">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Created Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of complaintsList">
+        <td>{{ c.subject }}</td>
+        <td>{{ c.description }}</td>
+        <td>
+          <span [ngClass]="c.status" class="status-badge">
+            {{ c.status }}
+          </span>
+        </td>
+        <td>{{ c.createdAt | date:'medium' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="complaintsList.length === 0" class="empty-msg">
+    No complaints submitted yet.
+  </p>
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  © 2025 HostelEase | Designed by Purna
+</footer>

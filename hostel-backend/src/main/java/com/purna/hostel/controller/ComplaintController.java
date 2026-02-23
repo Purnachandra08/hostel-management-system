@@ -4,12 +4,13 @@ import com.purna.hostel.entity.Complaint;
 import com.purna.hostel.entity.User;
 import com.purna.hostel.service.ComplaintService;
 import com.purna.hostel.service.UserService;
+import com.purna.hostel.service.email.EmailService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/complaints")
@@ -22,90 +23,112 @@ public class ComplaintController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EmailService emailService;
+
     // =========================
     // ✅ Submit complaint by student
     // =========================
     @PostMapping("/submit")
     public ResponseEntity<?> submitComplaint(@RequestBody Map<String, Object> request) {
 
-        // Extract userId and other complaint details from request
-        Long userId = ((Number) request.get("userId")).longValue();
-        String subject = (String) request.get("subject");
-        String description = (String) request.get("description");
-
-        if (userId == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "User ID is required"));
-        }
+        Long userId = Long.valueOf(request.get("userId").toString());
+        String subject = request.get("subject").toString();
+        String description = request.get("description").toString();
 
         User user = userService.getUserById(userId);
         if (user == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
+            return ResponseEntity.badRequest().body("User not found");
         }
 
         Complaint complaint = new Complaint();
         complaint.setUser(user);
         complaint.setSubject(subject);
         complaint.setDescription(description);
-        complaint.setStatus("PENDING"); // default status
+        complaint.setStatus("PENDING");
 
-        Complaint saved = complaintService.submitComplaint(user, complaint);
+        Complaint saved = complaintService.saveComplaint(complaint);
+
+        // 📧 Send email after submit
+        emailService.sendEmail(
+                user.getEmail(),
+                "Complaint Submitted Successfully",
+                "Dear " + user.getFullName() +
+                        ",\n\nYour complaint has been submitted successfully.\n\n" +
+                        "Subject: " + subject +
+                        "\nStatus: PENDING\n\nThank you."
+        );
+
         return ResponseEntity.ok(saved);
     }
 
     // =========================
-    // ✅ Get complaints by a specific user (Student View)
+    // ✅ Get complaints by student
     // =========================
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getComplaintsByUser(@PathVariable Long userId) {
         List<Complaint> complaints = complaintService.getComplaintsByUser(userId);
-
-        List<Map<String, Object>> result = complaints.stream().map(c -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", c.getId());
-            map.put("studentName", c.getUser() != null ? c.getUser().getFullName() : "Unknown");
-            map.put("subject", c.getSubject());
-            map.put("complaint", c.getDescription());
-            map.put("status", c.getStatus());
-            map.put("date", c.getCreatedAt());
-            return map;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(complaints);
     }
 
     // =========================
-    // ✅ Get all complaints (Warden/Admin View)
+    // ✅ Get all complaints (Warden)
     // =========================
     @GetMapping("/all")
     public ResponseEntity<?> getAllComplaints() {
-        List<Complaint> complaints = complaintService.getAllComplaints();
-
-        List<Map<String, Object>> result = complaints.stream().map(c -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", c.getId());
-            map.put("studentName", c.getUser() != null ? c.getUser().getFullName() : "Unknown");
-            map.put("subject", c.getSubject());
-            map.put("complaint", c.getDescription());
-            map.put("status", c.getStatus());
-            map.put("date", c.getCreatedAt());
-            return map;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(complaintService.getAllComplaints());
     }
 
     // =========================
-    // ✅ Update complaint status (Resolve)
+    // ✅ Update complaint status
     // =========================
-    @PutMapping("/update-status/{complaintId}")
-    public ResponseEntity<?> updateComplaintStatus(
-            @PathVariable Long complaintId,
-            @RequestParam String status
-    ) {
-        Complaint updated = complaintService.updateComplaintStatus(complaintId, status);
-        if (updated == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Complaint not found"));
+    @PutMapping("/update-status/{id}")
+    public ResponseEntity<?> updateStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+
+        Complaint complaint = complaintService.updateComplaintStatus(id, status);
+
+        if (complaint == null) {
+            return ResponseEntity.badRequest().body("Complaint not found");
         }
-        return ResponseEntity.ok(updated);
+
+        // 📧 Send status update email
+        emailService.sendEmail(
+                complaint.getUser().getEmail(),
+                "Complaint Status Updated",
+                "Dear " + complaint.getUser().getFullName() +
+                        ",\n\nYour complaint status has been updated.\n\n" +
+                        "Subject: " + complaint.getSubject() +
+                        "\nNew Status: " + status +
+                        "\n\nThank you."
+        );
+
+        return ResponseEntity.ok(complaint);
+    }
+
+    // =========================
+    // ✅ Delete complaint (Warden)
+    // =========================
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteComplaint(@PathVariable Long id) {
+
+        Complaint complaint = complaintService.getComplaintById(id);
+        if (complaint == null) {
+            return ResponseEntity.badRequest().body("Complaint not found");
+        }
+
+        complaintService.deleteComplaint(id);
+
+        // 📧 Send email after delete
+        emailService.sendEmail(
+                complaint.getUser().getEmail(),
+                "Complaint Removed",
+                "Dear " + complaint.getUser().getFullName() +
+                        ",\n\nYour complaint has been removed by the administration.\n\n" +
+                        "Subject: " + complaint.getSubject()
+        );
+
+        return ResponseEntity.ok("Complaint deleted successfully");
     }
 }
