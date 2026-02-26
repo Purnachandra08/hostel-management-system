@@ -1,0 +1,243 @@
+/* ============ General Styles ============ */
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f4fff7, #d9f8e3, #b9f0cc);
+  font-family: 'Poppins', sans-serif;
+  color: #1e2a23;
+  overflow-x: hidden;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* ============ Navbar ============ */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.8s ease;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #28a745;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-btn {
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  color: #166534;
+}
+
+.nav-btn:hover {
+  background: #eafff2;
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
+}
+
+/* ============ Container ============ */
+.attendance-container {
+  margin-top: 120px;
+  padding: 50px 8%;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(34, 197, 94, 0.2);
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeUp 1s ease;
+  backdrop-filter: blur(12px);
+  margin-bottom: 120px;
+}
+
+.attendance-container h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #166534;
+  margin-bottom: 35px;
+  animation: textGlow 2s infinite alternate;
+}
+
+/* ========================================= */
+/* 🔥 UPGRADED PREMIUM TABLE STYLING */
+/* ========================================= */
+
+.styled-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 15px 40px rgba(34, 197, 94, 0.25);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 1.2s ease;
+}
+
+/* Sticky Header */
+.styled-table thead {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.styled-table th {
+  padding: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+/* Table Body */
+.styled-table td {
+  padding: 18px;
+  font-size: 0.95rem;
+  color: #333;
+  text-align: center;
+}
+
+/* Alternate Row Coloring */
+.styled-table tbody tr:nth-child(even) {
+  background: #f9fdfb;
+}
+
+/* Row Animation */
+.styled-table tbody tr {
+  transition: all 0.35s ease;
+  animation: rowFade 0.6s ease forwards;
+  opacity: 0;
+}
+
+/* Row Hover Effect */
+.styled-table tbody tr:hover {
+  background: linear-gradient(to right, #eafff2, #d1fae5);
+  transform: scale(1.02);
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.25);
+}
+
+/* Smooth Border */
+.styled-table tbody tr td {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ========================================= */
+/* Status Badge Styling */
+/* ========================================= */
+
+.status-badge {
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-block;
+  min-width: 100px;
+  transition: 0.3s ease;
+}
+
+/* Present */
+.present {
+  background: linear-gradient(135deg, #bbf7d0, #4ade80);
+  color: #065f46;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+/* Absent */
+.absent {
+  background: linear-gradient(135deg, #fecaca, #f87171);
+  color: #7f1d1d;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+/* ========================================= */
+/* Empty Message */
+/* ========================================= */
+
+.empty-msg {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #166534;
+  padding: 25px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(34,197,94,0.1);
+}
+
+/* ============ Footer ============ */
+.footer {
+  background: rgba(255, 255, 255, 0.9);
+  color: #14532d;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+  animation: slideUp 1s ease;
+}
+
+/* ============ Animations ============ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-80px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes textGlow {
+  from { text-shadow: 0 0 10px #4ade80; }
+  to { text-shadow: 0 0 20px #22c55e; }
+}
+
+/* Row Fade Animation */
+@keyframes rowFade {
+  to {
+    opacity: 1;
+  }
+}

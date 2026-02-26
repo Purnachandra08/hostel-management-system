@@ -15,7 +15,8 @@ import { Complaints } from './student/complaints/complaints';
 import { ViewProfile } from './student/view-profile/view-profile';
 import { BookRoom } from './student/book-room/book-room';
 import { MyLeaves } from './student/my-leaves/my-leaves';
-import { StudentViewComplaints } from './student/view-complaints/view-complaints'; // ✅ NEW
+import { StudentViewComplaints } from './student/view-complaints/view-complaints';
+import { ViewAttendance } from './student/view-attendance/view-attendance'; // ✅ NEW
 
 // 🧑‍🏫 Warden
 import { WardenDashboard } from './warden/warden-dashboard/warden-dashboard';
@@ -61,9 +62,10 @@ export const routes: Routes = [
       { path: 'apply-leave', component: ApplyLeave },
       { path: 'my-leaves', component: MyLeaves },
       { path: 'complaints', component: Complaints },
-      { path: 'view-complaints', component: StudentViewComplaints }, // ✅ NEW ROUTE
+      { path: 'view-complaints', component: StudentViewComplaints },
       { path: 'view-profile', component: ViewProfile },
-      { path: 'book-room', component: BookRoom }
+      { path: 'book-room', component: BookRoom },
+      { path: 'view-attendance', component: ViewAttendance } // ✅ NEW ROUTE
     ]
   },
 

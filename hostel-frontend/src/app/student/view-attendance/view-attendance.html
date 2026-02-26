@@ -1,0 +1,54 @@
+<!-- 🌿 Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">HostelEase</div>
+    <div class="nav-links">
+      <a routerLink="/student" class="nav-btn">Dashboard</a>
+      <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
+      <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
+      <a routerLink="/student/view-attendance" class="nav-btn active">Attendance</a>
+      <a (click)="auth.logout(); router.navigate(['/login'])" class="nav-btn logout">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 🌿 Main Container -->
+<div class="attendance-container">
+  <h2>📅 My Attendance</h2>
+
+  <!-- ✅ Table if records exist -->
+  <table *ngIf="attendanceList.length > 0" class="styled-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let attendance of attendanceList">
+        <td>{{ attendance.date | date:'yyyy-MM-dd' }}</td>
+        <td>
+          <span 
+            [ngClass]="{
+              'present': attendance.status.toUpperCase() === 'PRESENT',
+              'absent': attendance.status.toUpperCase() === 'ABSENT'
+            }"
+            class="status-badge"
+          >
+            {{ attendance.status }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ✅ Message if no records -->
+  <p *ngIf="attendanceList.length === 0" class="empty-msg">
+    No attendance records found.
+  </p>
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  © 2025 HostelEase | Designed by Purna
+</footer>

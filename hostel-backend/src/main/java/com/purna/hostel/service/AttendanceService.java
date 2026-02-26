@@ -65,29 +65,58 @@ public class AttendanceService {
     }
 
     // =====================================================
-    // OTHER METHODS (UNCHANGED)
+    // CHECK IF ATTENDANCE EXISTS FOR DATE
     // =====================================================
-
     public boolean existsByDate(LocalDate date) {
         return attendanceRepository.existsByDate(date);
     }
 
+    // =====================================================
+    // GET TODAY'S ATTENDANCE
+    // =====================================================
     public List<Attendance> getTodayAttendance() {
         return attendanceRepository.findByDate(LocalDate.now());
     }
 
+    // =====================================================
+    // GET ATTENDANCE BY DATE
+    // =====================================================
     public List<Attendance> getAttendanceByDate(LocalDate date) {
         return attendanceRepository.findByDate(date);
     }
 
+    // =====================================================
+    // CHECK IF STUDENT ATTENDANCE EXISTS FOR A DATE
+    // =====================================================
     public boolean existsByStudentAndDate(User student, LocalDate date) {
         return attendanceRepository.existsByStudentAndDate(student, date);
     }
 
+    // =====================================================
+    // GET ATTENDANCE BY STUDENT OBJECT
+    // =====================================================
     public List<Attendance> getAttendanceByStudent(User student) {
         return attendanceRepository.findByStudent(student);
     }
 
+    // =====================================================
+    // ✅ GET ATTENDANCE BY STUDENT ID (NEW)
+    // =====================================================
+    public List<Attendance> getAttendanceByStudentId(Long studentId) {
+
+        // Get User object first
+        User student = userService.getUserById(studentId);
+
+        if (student == null) {
+            return new ArrayList<>();
+        }
+
+        return attendanceRepository.findByStudent(student);
+    }
+
+    // =====================================================
+    // CALCULATE ATTENDANCE %
+    // =====================================================
     public double calculateAttendancePercentage(User student) {
 
         long totalDays = attendanceRepository.countByStudent(student);
@@ -99,6 +128,9 @@ public class AttendanceService {
         return (presentDays * 100.0) / totalDays;
     }
 
+    // =====================================================
+    // GET STUDENTS AVAILABLE FOR ATTENDANCE
+    // =====================================================
     public List<User> getStudentsAvailableForAttendance(LocalDate date) {
 
         List<User> allStudents = userService.getAllStudents();
@@ -123,6 +155,9 @@ public class AttendanceService {
         return availableStudents;
     }
 
+    // =====================================================
+    // CHECK IF STUDENT IS ON LEAVE
+    // =====================================================
     public boolean isStudentOnLeave(User student, LocalDate date) {
 
         return leaveRequestRepository

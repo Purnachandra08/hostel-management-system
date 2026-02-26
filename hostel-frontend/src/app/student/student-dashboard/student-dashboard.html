@@ -7,7 +7,8 @@
       <a routerLink="/student/book-room" class="nav-btn">Book Room</a>
       <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
       <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
-      <a routerLink="/student/view-profile" class="nav-btn">Profile</a> <!-- ✅ fixed -->
+      <a routerLink="/student/view-profile" class="nav-btn">Profile</a>
+      <a routerLink="/student/view-attendance" class="nav-btn">Attendance</a> <!-- ✅ NEW LINK -->
     </div>
     <button class="nav-btn logout" (click)="logout()">Logout</button>
   </div>
@@ -28,57 +29,54 @@
       <p>Raise a complaint and get updates from your warden/admin.</p>
     </a>
 
-    <a routerLink="/student/view-profile" class="card"> <!-- ✅ fixed -->
-      <h3>👤 View Profile</h3>
-      <p>Check your personal info, room details, and payment history.</p>
-    </a>
 
     <a routerLink="/student/book-room" class="card">
       <h3>🏠 Book Room</h3>
       <p>Reserve your hostel room quickly and easily.</p>
     </a>
+
+    <!-- ✅ NEW CARD: View Attendance -->
+    <a routerLink="/student/view-attendance" class="card">
+      <h3>📊 View Attendance</h3>
+      <p>Check your attendance records date-wise for all classes.</p>
+    </a>
   </div>
 
   <!-- 🌿 Daily Mess Menu -->
-<div class="mess-menu">
-  <h3>🍽️ Today’s Mess Menu</h3>
-
-  <div class="menu-grid">
-    <div class="menu-card">
-      <h4>🌅 Breakfast</h4>
-      <p>{{ messMenu.breakfast }}</p>
-    </div>
-
-    <div class="menu-card">
-      <h4>🌞 Lunch</h4>
-      <p>{{ messMenu.lunch }}</p>
-    </div>
-
-    <div class="menu-card">
-      <h4>🌙 Dinner</h4>
-      <p>{{ messMenu.dinner }}</p>
+  <div class="mess-menu">
+    <h3>🍽️ Today’s Mess Menu</h3>
+    <div class="menu-grid">
+      <div class="menu-card">
+        <h4>🌅 Breakfast</h4>
+        <p>{{ messMenu.breakfast }}</p>
+      </div>
+      <div class="menu-card">
+        <h4>🌞 Lunch</h4>
+        <p>{{ messMenu.lunch }}</p>
+      </div>
+      <div class="menu-card">
+        <h4>🌙 Dinner</h4>
+        <p>{{ messMenu.dinner }}</p>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 🌿 Digital ID Card -->
-<div class="id-card-section">
-  <h3>🆔 Digital Hostel ID</h3>
-
-  <div class="id-card">
-    <div class="id-header">HOSTEL ID</div>
-
-    <div class="id-body">
-      <img src="assets/student.png" class="id-photo" alt="Student Photo">
-      <p><strong>Name:</strong> {{ studentName }}</p>
-      <p><strong>Roll No:</strong> {{ studentRoll }}</p>
-      <p><strong>Room:</strong> {{ roomNumber }}</p>
-      <p><strong>Hostel:</strong> Green View Hostel</p>
+  <!-- 🌿 Digital ID Card -->
+  <div class="id-card-section">
+    <h3>🆔 Digital Hostel ID</h3>
+    <div class="id-card">
+      <div class="id-header">HOSTEL ID</div>
+      <div class="id-body">
+        <img src="assets/student.png" class="id-photo" alt="Student Photo">
+        <p><strong>Name:</strong> {{ studentName }}</p>
+        <p><strong>Roll No:</strong> {{ studentRoll }}</p>
+        <p><strong>Room:</strong> {{ roomNumber }}</p>
+        <p><strong>Hostel:</strong> Green View Hostel</p>
+      </div>
     </div>
   </div>
-</div>
 
-
+  <!-- 🔔 Notifications -->
   <div class="notifications">
     <h3>🔔 Recent Notifications</h3>
     <ul>
