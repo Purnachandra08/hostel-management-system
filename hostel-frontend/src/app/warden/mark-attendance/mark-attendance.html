@@ -1,4 +1,4 @@
-<!-- 🌿 Navbar (same style as Warden Dashboard) -->
+<!-- 🌿 Navbar -->
 <nav class="navbar">
   <div class="logo">🏫 Hostel Warden Panel</div>
   <ul class="nav-links">
@@ -10,75 +10,176 @@
   </ul>
 </nav>
 
-<!-- 📋 Attendance Page -->
 <div class="dashboard-content">
 
-  <h2>📋 Mark Attendance</h2>
-  <p>Attendance Date: <strong>{{ todayDate }}</strong></p>
+  <h2>📋 Attendance Management</h2>
 
-  <!-- 📊 Attendance Summary -->
-  <div class="summary-cards">
-    <div class="card" style="border-top: 6px solid #3498db">
-      <h3>👨‍🎓 Total Students</h3>
-      <p>{{ totalStudents }}</p>
-    </div>
+  <!-- ===========================
+       DATE SELECTION SECTION
+  ============================ -->
+  <div class="date-view-section">
+    <label>Select Date:</label>
 
-    <div class="card" style="border-top: 6px solid #2ecc71">
-      <h3>✅ Present</h3>
-      <p>{{ presentCount }}</p>
-    </div>
+    <!-- 🔥 Call onDateChange -->
+    <input type="date"
+           [(ngModel)]="selectedDate"
+           (change)="onDateChange()" />
 
-    <div class="card" style="border-top: 6px solid #e74c3c">
-      <h3>❌ Absent</h3>
-      <p>{{ absentCount }}</p>
-    </div>
+    <button (click)="viewAttendance()">
+      🔍 View Attendance
+    </button>
+
+    <button *ngIf="viewMode"
+            (click)="backToMark()"
+            class="secondary-btn">
+      ⬅ Back to Mark Attendance
+    </button>
   </div>
 
-  <!-- Alerts -->
-  <div *ngIf="loading" class="loading">⏳ Loading students...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
-  <div *ngIf="message" class="success-msg">{{ message }}</div>
+  <p *ngIf="!viewMode">
+    Attendance Date:
+    <strong>{{ selectedDate }}</strong>
+  </p>
 
-  <!-- 📋 Attendance Table -->
-  <table *ngIf="students.length && !loading" class="attendance-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Student Name</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let s of students">
-        <td>{{ s.id }}</td>
-        <td>{{ s.fullName || s.username }}</td>
-        <td>
-          <span
-            [ngClass]="{
-              present: getStatus(s.id) === 'PRESENT',
-              absent: getStatus(s.id) === 'ABSENT'
-            }"
-          >
-            {{ getStatus(s.id) }}
-          </span>
-        </td>
-        <td>
-          <button class="present-btn" (click)="mark(s.id, 'PRESENT')">Present</button>
-          <button class="absent-btn" (click)="mark(s.id, 'ABSENT')">Absent</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Submit -->
-  <div class="submit-section" *ngIf="students.length && !loading">
-    <button class="submit-btn" (click)="submitAttendance()">💾 Submit Attendance</button>
+  <!-- ===========================
+       ALERTS
+  ============================ -->
+  <div *ngIf="loading" class="loading">
+    ⏳ Processing...
   </div>
+
+  <div *ngIf="error" class="error-box">
+    {{ error }}
+  </div>
+
+  <div *ngIf="message" class="success-box">
+    {{ message }}
+  </div>
+
+  <!-- =========================================================
+       MARK ATTENDANCE MODE
+  ========================================================== -->
+  <div *ngIf="!viewMode">
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card">
+        <h3>👨‍🎓 Total Students</h3>
+        <p>{{ totalStudents }}</p>
+      </div>
+
+      <div class="card present">
+        <h3>✅ Present</h3>
+        <p>{{ presentCount }}</p>
+      </div>
+
+      <div class="card absent">
+        <h3>❌ Absent</h3>
+        <p>{{ absentCount }}</p>
+      </div>
+    </div>
+
+    <!-- Attendance Table -->
+    <table *ngIf="students.length && !loading">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Student Name</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let s of students">
+          <td>{{ s.id }}</td>
+          <td>{{ s.fullName || s.username }}</td>
+
+          <!-- 🔥 Colored Status Badge -->
+          <td>
+            <span
+              [ngClass]="{
+                'badge-present': attendanceData[s.id] === 'PRESENT',
+                'badge-absent': attendanceData[s.id] === 'ABSENT'
+              }">
+              {{ getStatus(s.id) }}
+            </span>
+          </td>
+
+          <td>
+            <button
+              class="present-btn"
+              (click)="mark(s.id, 'PRESENT')">
+              Present
+            </button>
+
+            <button
+              class="absent-btn"
+              (click)="mark(s.id, 'ABSENT')">
+              Absent
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Submit Button -->
+    <div *ngIf="students.length && !loading" class="submit-section">
+      <button
+        class="submit-btn"
+        (click)="submitAttendance()"
+        [disabled]="submitting || loading">
+
+        {{ submitting ? 'Submitting...' : '💾 Submit Attendance' }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       VIEW PREVIOUS ATTENDANCE MODE
+  ========================================================== -->
+  <div *ngIf="viewMode">
+
+    <h3>📅 Attendance for {{ selectedDate }}</h3>
+
+    <table *ngIf="previousAttendance.length && !loading">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let record of previousAttendance">
+          <td>{{ record.student?.fullName || record.student?.username }}</td>
+
+          <td>
+            <span
+              [ngClass]="{
+                'badge-present': record.status === 'PRESENT',
+                'badge-absent': record.status === 'ABSENT'
+              }">
+              {{ record.status }}
+            </span>
+          </td>
+
+          <td>{{ record.date }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!previousAttendance.length && !loading">
+      No attendance found for selected date.
+    </div>
+
+  </div>
+
 </div>
 
 <!-- 🌿 Footer -->
 <footer class="footer">
-  © 2025 Hostel Management System | Warden Panel
+  © 2026 Hostel Management System | Warden Panel
 </footer>

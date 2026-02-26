@@ -17,7 +17,7 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     // ================================
-    // ✅ 1. OTP Email (UNCHANGED)
+    // 1. OTP Email
     // ================================
     public void sendOtpEmail(String toEmail, String otp) {
 
@@ -30,7 +30,7 @@ public class EmailService {
     }
 
     // ================================
-    // ✅ 2. General Email (UNCHANGED)
+    // 2. General Email
     // ================================
     public void sendEmail(String toEmail, String subject, String body) {
 
@@ -43,7 +43,7 @@ public class EmailService {
     }
 
     // ================================
-    // ✅ 3. Leave Application Email
+    // 3. Leave Applied Email
     // ================================
     public void sendLeaveAppliedEmail(String toEmail, String studentName) {
 
@@ -57,7 +57,7 @@ public class EmailService {
     }
 
     // ================================
-    // ✅ 4. Leave Status Update Email
+    // 4. Leave Status Update Email
     // ================================
     public void sendLeaveStatusEmail(String toEmail, String studentName, String status) {
 
@@ -70,7 +70,7 @@ public class EmailService {
     }
 
     // ================================
-    // ✅ 5. Gate Pass Email (With PDF Attachment)
+    // 5. Gate Pass Email (PDF)
     // ================================
     public void sendGatePassEmail(String toEmail,
                                   String studentName,
@@ -93,5 +93,22 @@ public class EmailService {
                 new ByteArrayResource(pdfBytes));
 
         mailSender.send(message);
+    }
+
+    // ================================
+    // 6. 🚨 ABSENT ATTENDANCE EMAIL
+    // ================================
+    public void sendAbsentAttendanceEmail(String toEmail,
+                                          String studentName,
+                                          String date) {
+
+        String subject = "⚠ Attendance Alert - Marked Absent";
+
+        String body = "Dear " + studentName + ",\n\n"
+                + "You were marked ABSENT on " + date + ".\n\n"
+                + "If this is incorrect, please contact the hostel office immediately.\n\n"
+                + "Regards,\nHostel Management";
+
+        sendEmail(toEmail, subject, body);
     }
 }

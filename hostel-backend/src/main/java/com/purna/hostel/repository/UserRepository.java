@@ -2,6 +2,7 @@ package com.purna.hostel.repository;
 
 import com.purna.hostel.entity.User;
 import com.purna.hostel.entity.RoleName;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     // =========================
-    // ✅ FIND USERS BY ROLE (ENUM SAFE)
+    // FIND USERS BY ROLE
     // =========================
     @Query("""
         SELECT u FROM User u
@@ -28,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRoleName(@Param("roleName") RoleName roleName);
 
     // =========================
-    // 🔍 SEARCH STUDENTS (ENUM SAFE)
+    // SEARCH STUDENTS
     // =========================
     @Query("""
         SELECT u FROM User u

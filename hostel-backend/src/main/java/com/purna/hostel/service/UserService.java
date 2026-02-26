@@ -5,6 +5,7 @@ import com.purna.hostel.entity.RoleName;
 import com.purna.hostel.entity.User;
 import com.purna.hostel.repository.RoleRepository;
 import com.purna.hostel.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -114,7 +115,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User user = getUserById(id);
-        user.getRoles().clear(); // FK safe
+        user.getRoles().clear();
         userRepository.delete(user);
     }
 
@@ -128,17 +129,14 @@ public class UserService {
     public List<User> searchStudents(String keyword) {
         return userRepository.searchStudents(keyword, RoleName.ROLE_STUDENT);
     }
-    
- // =========================
- // DELETE USER (ADMIN)
- // =========================
- public void deleteById(Long id) {
 
-     if (!userRepository.existsById(id)) {
-         throw new RuntimeException("User not found with id: " + id);
-     }
-
-     userRepository.deleteById(id);
- }
-
+    // =========================
+    // DELETE USER (ADMIN)
+    // =========================
+    public void deleteById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
 }
