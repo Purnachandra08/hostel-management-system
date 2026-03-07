@@ -1,157 +1,276 @@
 <!-- ================= Navbar ================= -->
 <nav class="navbar">
   <div class="navbar-container">
-    <div class="logo">SmartHostel</div>
+
+    <div class="logo">🏨 SmartHostel</div>
+
     <div class="nav-links">
       <a routerLink="/login" class="nav-btn login">Login</a>
       <a routerLink="/register" class="nav-btn register">Register</a>
     </div>
+
   </div>
 </nav>
 
-<!-- ================= Landing Page Content ================= -->
-<div class="landing-container">
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Welcome to <span>SmartHostel</span></h1>
-      <p>
-        Smart, simple, and sustainable hostel management — connecting students, wardens, and admins in one smart ecosystem.
-      </p>
-      <a routerLink="/login" class="btn explore-btn">Get Started</a>
 
-      <div class="stats">
-        <div class="stat-box">
-          <h2>500+</h2>
+
+<!-- ================= Landing Page ================= -->
+<div class="landing-container">
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+
+  <div class="hero-wrapper">
+
+    <div class="hero-text">
+
+      <h1>
+        Smart Hostel <span>Management Platform</span>
+      </h1>
+
+      <p>
+        A modern digital solution that simplifies hostel administration.
+        Manage rooms, complaints, attendance and leave requests
+        through one intelligent platform.
+      </p>
+
+      <div class="hero-buttons">
+        <a routerLink="/register" class="btn primary">Get Started</a>
+        <a routerLink="/login" class="btn secondary">Login</a>
+      </div>
+
+      <div class="hero-stats">
+
+        <div class="stat">
+          <h3>500+</h3>
           <p>Students</p>
         </div>
-        <div class="stat-box">
-          <h2>20+</h2>
+
+        <div class="stat">
+          <h3>20+</h3>
           <p>Hostels</p>
         </div>
-        <div class="stat-box">
-          <h2>1200+</h2>
+
+        <div class="stat">
+          <h3>1200+</h3>
           <p>Rooms</p>
         </div>
+
       </div>
-    </div>
-  </section>
 
-  <!-- About Section -->
-<section class="about-us">
-  <div class="about-card">
-    <h2>About SmartHostel</h2>
-    <p>
-      SmartHostel redefines hostel management with an intelligent, eco-friendly platform.
-      From room allocation to digital maintenance tracking — everything happens seamlessly
-      and efficiently with complete transparency and security.
-    </p>
+    </div>
+
+    <div class="hero-image">
+      <img src="assets/images/hero-hostel.png"
+           alt="Smart Hostel Management"
+           loading="lazy">
+    </div>
+
   </div>
+
 </section>
 
 
-  <!-- ================= Hostel Rules ================= -->
+<!-- ================= FEATURES ================= -->
+<section class="features">
+
+<h2>Powerful Hostel Management Features</h2>
+
+<div class="feature-grid">
+
+<div class="feature-card">
+<h3>🏠 Room Allocation</h3>
+<p>
+Students can easily book hostel rooms while wardens
+manage allocations digitally.
+</p>
+</div>
+
+<div class="feature-card">
+<h3>📅 Leave Management</h3>
+<p>
+Students submit leave requests online and wardens
+approve them instantly.
+</p>
+</div>
+
+<div class="feature-card">
+<h3>📝 Complaint System</h3>
+<p>
+Report maintenance or hostel issues directly through
+the system with real-time tracking.
+</p>
+</div>
+
+<div class="feature-card">
+<h3>📊 Attendance Tracking</h3>
+<p>
+Wardens can mark attendance and students can view
+records anytime.
+</p>
+</div>
+
+<div class="feature-card">
+<h3>🔐 Secure Login</h3>
+<p>
+Role-based access for students, wardens and admins
+with strong authentication.
+</p>
+</div>
+
+<div class="feature-card">
+<h3>⚡ Smart Dashboard</h3>
+<p>
+Real-time dashboards give instant insights about
+hostel activities.
+</p>
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= ABOUT ================= -->
+<section class="about">
+
+<div class="about-wrapper">
+
+<div class="about-image">
+<img src="assets/images/hostel2.jpg">
+</div>
+
+<div class="about-text">
+
+<h2>About SmartHostel</h2>
+
+<p>
+SmartHostel is a modern hostel management platform
+built to automate manual administrative work.
+The system connects students, wardens and
+administrators in a single ecosystem.
+</p>
+
+<p>
+From room booking to complaint resolution,
+everything happens digitally which increases
+efficiency, transparency and convenience.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= RULES ================= -->
 <section class="rules">
-  <h2>Hostel Rules & Guidelines</h2>
 
-  <div class="rules-grid">
-    <div class="rule-card">
-      ⏰ <h3>Entry Timing</h3>
-      <p>Students must return to the hostel before 10:00 PM.</p>
-    </div>
+<h2>Hostel Rules</h2>
 
-    <div class="rule-card">
-      📋 <h3>Attendance</h3>
-      <p>Daily attendance is mandatory for all residents.</p>
-    </div>
+<div class="rules-grid">
 
-    <div class="rule-card">
-      💰 <h3>Fee Policy</h3>
-      <p>Hostel fees must be paid before the due date.</p>
-    </div>
+<div class="rule">
+<h3>⏰ Entry Timing</h3>
+<p>Students must return before 10:00 PM.</p>
+</div>
 
-    <div class="rule-card">
-      🧹 <h3>Discipline & Cleanliness</h3>
-      <p>Rooms and common areas must be kept clean.</p>
-    </div>
-  </div>
+<div class="rule">
+<h3>📋 Attendance</h3>
+<p>Daily hostel attendance is mandatory.</p>
+</div>
+
+<div class="rule">
+<h3>🧹 Cleanliness</h3>
+<p>Rooms and hostel areas must remain clean.</p>
+</div>
+
+<div class="rule">
+<h3>💰 Fee Policy</h3>
+<p>Hostel fees must be paid before due date.</p>
+</div>
+
+</div>
+
 </section>
 
-  <!-- ================= Testimonials ================= -->
+
+
+<!-- ================= TESTIMONIALS ================= -->
 <section class="testimonials">
-  <h2>What People Say</h2>
 
-  <div class="testimonial-grid">
-    <div class="testimonial-card">
-      <p>
-        “This system made hostel administration faster and error-free.”
-      </p>
-      <h4>— Hostel Warden</h4>
-    </div>
+<h2>What Our Users Say</h2>
 
-    <div class="testimonial-card">
-      <p>
-        “Easy to apply for hostel and track complaints online.”
-      </p>
-      <h4>— Student User</h4>
-    </div>
-  </div>
-</section>
+<div class="testimonial-grid">
 
-<!-- ================= Notice Board ================= -->
-<section class="notice-board">
-  <h2>Announcements</h2>
+<div class="testimonial-card">
+<p>
+SmartHostel made hostel administration extremely
+efficient and removed manual paperwork completely.
+</p>
+<h4>— Hostel Warden</h4>
+</div>
 
-  <div class="notice-ticker">
-    <p>🔔 Hostel fee payment deadline: 25th March</p>
-    <p>🔔 Room inspection scheduled on Friday</p>
-    <p>🔔 Hostel closed on public holiday</p>
-  </div>
-</section>
+<div class="testimonial-card">
+<p>
+Applying for leave and checking attendance is
+very simple using the SmartHostel dashboard.
+</p>
+<h4>— Student</h4>
+</div>
 
-<!-- ================= Comparison ================= -->
-<section class="comparison">
-  <h2>Why SmartHostel?</h2>
+</div>
 
-  <table>
-    <tr>
-      <th>Manual System</th>
-      <th>SmartHostel</th>
-    </tr>
-    <tr>
-      <td>Paper-based records</td>
-      <td>Digital & Cloud-based</td>
-    </tr>
-    <tr>
-      <td>Time consuming</td>
-      <td>Fast processing</td>
-    </tr>
-    <tr>
-      <td>Error-prone</td>
-      <td>Secure & accurate</td>
-    </tr>
-    <tr>
-      <td>No tracking</td>
-      <td>Real-time tracking</td>
-    </tr>
-  </table>
 </section>
 
 
-  <!-- Gallery Section -->
- <section class="gallery">
-  <h2>Our Facilities</h2>
-  <div class="gallery-grid">
-    <img src="assets/images/hostel1.jpg" alt="Hostel 1" />
-    <img src="assets/images/hostel2.jpg" alt="Hostel 2" />
-    <img src="assets/images/hostel3.jpg" alt="Hostel 3" />
-    <img src="assets/images/hostel4.jpeg" alt="Hostel 4" />
-  </div>
+
+<!-- ================= GALLERY ================= -->
+<section class="gallery">
+
+<h2>Hostel Facilities</h2>
+
+<div class="gallery-grid">
+
+<img src="assets/images/hostel1.jpg">
+<img src="assets/images/hostel2.jpg">
+<img src="assets/images/hostel3.jpg">
+<img src="assets/images/hostel4.jpeg">
+
+</div>
+
+</section>
+
+
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+
+<h2>Start Managing Your Hostel Smarter</h2>
+
+<p>
+Join SmartHostel and experience the future
+of digital hostel management.
+</p>
+
+<a routerLink="/register" class="cta-btn">
+Create Your Account
+</a>
+
 </section>
 
 </div>
 
+
+
 <!-- ================= Footer ================= -->
 <footer class="footer">
-  <p>© 2025 SmartHostel | All Rights Reserved</p>
+
+<p>
+© 2025 SmartHostel | Smart Hostel Management Platform
+</p>
+
 </footer>

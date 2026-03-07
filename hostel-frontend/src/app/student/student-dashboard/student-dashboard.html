@@ -2,23 +2,28 @@
 <nav class="navbar">
   <div class="navbar-container">
     <div class="logo">🏨 Hostel Management</div>
+
     <div class="nav-links">
       <a routerLink="/student" class="nav-btn">Dashboard</a>
       <a routerLink="/student/book-room" class="nav-btn">Book Room</a>
       <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
       <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
       <a routerLink="/student/view-profile" class="nav-btn">Profile</a>
-      <a routerLink="/student/view-attendance" class="nav-btn">Attendance</a> <!-- ✅ NEW LINK -->
+      <a routerLink="/student/view-attendance" class="nav-btn">Attendance</a>
     </div>
+
     <button class="nav-btn logout" (click)="logout()">Logout</button>
   </div>
 </nav>
 
 <!-- 🌿 Dashboard Section -->
 <div class="dashboard-container">
+
   <h2 class="welcome">Welcome, {{ studentName }} 👋</h2>
 
+  <!-- 🌿 Quick Cards -->
   <div class="card-grid">
+
     <a routerLink="/student/apply-leave" class="card">
       <h3>📅 Apply for Leave</h3>
       <p>Submit a new leave request and track approval status.</p>
@@ -26,66 +31,78 @@
 
     <a routerLink="/student/complaints" class="card">
       <h3>📝 Lodge a Complaint</h3>
-      <p>Raise a complaint and get updates from your warden/admin.</p>
+      <p>Raise a complaint and get updates from warden/admin.</p>
     </a>
-
 
     <a routerLink="/student/book-room" class="card">
       <h3>🏠 Book Room</h3>
-      <p>Reserve your hostel room quickly and easily.</p>
+      <p>Reserve your hostel room quickly.</p>
     </a>
 
-    <!-- ✅ NEW CARD: View Attendance -->
     <a routerLink="/student/view-attendance" class="card">
       <h3>📊 View Attendance</h3>
-      <p>Check your attendance records date-wise for all classes.</p>
+      <p>Check your attendance records.</p>
     </a>
+
   </div>
 
-  <!-- 🌿 Daily Mess Menu -->
+  <!-- 🍽️ Weekly Mess Menu -->
   <div class="mess-menu">
-    <h3>🍽️ Today’s Mess Menu</h3>
+
+    <h3>🍽️ Weekly Mess Menu</h3>
+
+    <!-- Day Tabs -->
+    <div class="day-tabs">
+      <button
+        *ngFor="let day of ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']"
+        (click)="selectDay(day)"
+        [class.active]="selectedDay === day">
+        {{ day }}
+      </button>
+    </div>
+
+    <!-- Menu Content -->
     <div class="menu-grid">
+
       <div class="menu-card">
         <h4>🌅 Breakfast</h4>
-        <p>{{ messMenu.breakfast }}</p>
+        <p>{{ messMenu[selectedDay].breakfast }}</p>
       </div>
+
       <div class="menu-card">
         <h4>🌞 Lunch</h4>
-        <p>{{ messMenu.lunch }}</p>
+        <p>{{ messMenu[selectedDay].lunch }}</p>
       </div>
+
       <div class="menu-card">
         <h4>🌙 Dinner</h4>
-        <p>{{ messMenu.dinner }}</p>
+        <p>{{ messMenu[selectedDay].dinner }}</p>
       </div>
+
     </div>
+
   </div>
 
   <!-- 🌿 Digital ID Card -->
   <div class="id-card-section">
+
     <h3>🆔 Digital Hostel ID</h3>
+
     <div class="id-card">
       <div class="id-header">HOSTEL ID</div>
+
       <div class="id-body">
         <img src="assets/student.png" class="id-photo" alt="Student Photo">
+
         <p><strong>Name:</strong> {{ studentName }}</p>
         <p><strong>Roll No:</strong> {{ studentRoll }}</p>
         <p><strong>Room:</strong> {{ roomNumber }}</p>
         <p><strong>Hostel:</strong> Green View Hostel</p>
       </div>
     </div>
+
   </div>
 
-  <!-- 🔔 Notifications -->
-  <div class="notifications">
-    <h3>🔔 Recent Notifications</h3>
-    <ul>
-      <li *ngFor="let note of notifications">
-        <strong>{{ note.message }}</strong>
-        <span>{{ note.date }}</span>
-      </li>
-    </ul>
-  </div>
 </div>
 
 <!-- 🌿 Footer -->
