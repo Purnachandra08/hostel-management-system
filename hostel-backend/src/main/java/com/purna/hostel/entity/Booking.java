@@ -18,7 +18,9 @@ public class Booking {
 
     private LocalDate startDate;
     private LocalDate endDate;
-    private String status; // ACTIVE, COMPLETED, CANCELLED
+
+    // ACTIVE, COMPLETED, CANCELLED
+    private String status;
 
     // getters and setters
     public Long getId() { return id; }

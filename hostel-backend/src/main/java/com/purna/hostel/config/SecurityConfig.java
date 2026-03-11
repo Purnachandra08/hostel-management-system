@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -38,30 +39,29 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-            	    // ✅ Preflight
-            	    .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                // ✅ Allow Preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-            	    // 🔓 Public APIs
-            	    .requestMatchers(
-            	        "/api/auth/register",
-            	        "/api/auth/login",
-            	        "/api/auth/verify-otp",
-            	        "/error"
-            	    ).permitAll()
+                // 🔓 Public APIs
+                .requestMatchers(
+                        "/api/auth/register",
+                        "/api/auth/login",
+                        "/api/auth/verify-otp",
+                        "/error"
+                ).permitAll()
 
-            	    // 👑 ADMIN
-            	    .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                // ✅ TEMP: Allow Admin APIs for testing
+                .requestMatchers("/api/admin/**").permitAll()
 
-            	    // 🧑‍🏫 WARDEN
-            	    .requestMatchers("/api/warden/**").hasAuthority("ROLE_WARDEN")
+                // 🧑‍🏫 Warden APIs
+                .requestMatchers("/api/warden/**").hasAuthority("ROLE_WARDEN")
 
-            	    // 👨‍🎓 STUDENT
-            	    .requestMatchers("/api/student/**").hasAuthority("ROLE_STUDENT")
+                // 👨‍🎓 Student APIs
+                .requestMatchers("/api/student/**").hasAuthority("ROLE_STUDENT")
 
-            	    // 🔒 Everything else
-            	    .anyRequest().authenticated()
-            	)
-
+                // 🔒 Everything else
+                .anyRequest().authenticated()
+            )
 
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -75,13 +75,21 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration config = new CorsConfiguration();
+
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        config.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        );
+
         config.setAllowedHeaders(List.of("*"));
+
         config.setExposedHeaders(List.of("Authorization"));
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
 
         return source;

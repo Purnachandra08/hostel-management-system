@@ -12,37 +12,48 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    // =========================
+    // BASIC CHECKS
+    // =========================
     boolean existsByUsername(String username);
+
     boolean existsByEmail(String email);
 
     Optional<User> findByUsername(String username);
+
     Optional<User> findByEmail(String email);
+
+    // =========================
+    // COUNT USERS BY ROLE
+    // =========================
+    long countByRoles_Name(RoleName roleName);
 
     // =========================
     // FIND USERS BY ROLE
     // =========================
     @Query("""
-        SELECT u FROM User u
-        JOIN u.roles r
-        WHERE r.name = :roleName
-    """)
+            SELECT u FROM User u
+            JOIN u.roles r
+            WHERE r.name = :roleName
+           """)
     List<User> findByRoleName(@Param("roleName") RoleName roleName);
 
     // =========================
     // SEARCH STUDENTS
     // =========================
     @Query("""
-        SELECT u FROM User u
-        JOIN u.roles r
-        WHERE r.name = :studentRole
-        AND (
-            LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%'))
-            OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        )
-    """)
+            SELECT u FROM User u
+            JOIN u.roles r
+            WHERE r.name = :studentRole
+            AND (
+                LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            )
+           """)
     List<User> searchStudents(
             @Param("keyword") String keyword,
             @Param("studentRole") RoleName studentRole
     );
+
 }

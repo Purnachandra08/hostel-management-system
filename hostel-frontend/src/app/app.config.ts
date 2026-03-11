@@ -16,7 +16,7 @@ import { ViewProfile } from './student/view-profile/view-profile';
 import { BookRoom } from './student/book-room/book-room';
 import { MyLeaves } from './student/my-leaves/my-leaves';
 import { StudentViewComplaints } from './student/view-complaints/view-complaints';
-import { ViewAttendance } from './student/view-attendance/view-attendance'; // ✅ NEW
+import { ViewAttendance } from './student/view-attendance/view-attendance';
 
 // 🧑‍🏫 Warden
 import { WardenDashboard } from './warden/warden-dashboard/warden-dashboard';
@@ -32,10 +32,10 @@ import { ManageWardens } from './admin/manage-wardens/manage-wardens';
 
 // 🔐 Guards
 import {
-  authGuard,
-  studentGuard,
-  wardenGuard,
-  adminGuard
+authGuard,
+studentGuard,
+wardenGuard,
+adminGuard
 } from './guards';
 
 // 🔐 JWT Interceptor
@@ -46,66 +46,66 @@ import { jwtInterceptor } from './services/jwt.interceptor';
 // ===============================
 export const routes: Routes = [
 
-  // 🌐 Public
-  { path: '', component: LandingComponent },
-  { path: 'landing', component: LandingComponent },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'otp', component: Otp },
+// 🌐 Public
+{ path: '', component: LandingComponent },
+{ path: 'landing', component: LandingComponent },
+{ path: 'login', component: Login },
+{ path: 'register', component: Register },
+{ path: 'otp', component: Otp },
 
-  // 🧑‍🎓 Student
-  {
-    path: 'student',
-    canActivate: [authGuard, studentGuard],
-    children: [
-      { path: '', component: StudentDashboard },
-      { path: 'apply-leave', component: ApplyLeave },
-      { path: 'my-leaves', component: MyLeaves },
-      { path: 'complaints', component: Complaints },
-      { path: 'view-complaints', component: StudentViewComplaints },
-      { path: 'view-profile', component: ViewProfile },
-      { path: 'book-room', component: BookRoom },
-      { path: 'view-attendance', component: ViewAttendance } // ✅ NEW ROUTE
-    ]
-  },
+// 🧑‍🎓 Student
+{
+path: 'student',
+canActivate: [authGuard, studentGuard],
+children: [
+{ path: '', component: StudentDashboard },
+{ path: 'apply-leave', component: ApplyLeave },
+{ path: 'my-leaves', component: MyLeaves },
+{ path: 'complaints', component: Complaints },
+{ path: 'view-complaints', component: StudentViewComplaints },
+{ path: 'view-profile', component: ViewProfile },
+{ path: 'book-room', component: BookRoom },
+{ path: 'view-attendance', component: ViewAttendance }
+]
+},
 
-  // 🧑‍🏫 Warden
-  {
-    path: 'warden',
-    canActivate: [authGuard, wardenGuard],
-    children: [
-      { path: '', component: WardenDashboard },
-      { path: 'mark-attendance', component: MarkAttendance },
-      { path: 'leave-approval', component: LeaveApproval },
-      { path: 'complaints', component: WardenComplaints }
-    ]
-  },
+// 🧑‍🏫 Warden
+{
+path: 'warden',
+canActivate: [authGuard, wardenGuard],
+children: [
+{ path: '', component: WardenDashboard },
+{ path: 'mark-attendance', component: MarkAttendance },
+{ path: 'leave-approval', component: LeaveApproval },
+{ path: 'complaints', component: WardenComplaints }
+]
+},
 
-  // 🧑‍💼 Admin
-  {
-    path: 'admin',
-    canActivate: [authGuard, adminGuard],
-    children: [
-      { path: '', component: AdminDashboard },
-      { path: 'manage-rooms', component: ManageRooms },
-      { path: 'manage-students', component: ManageStudents },
-      { path: 'manage-wardens', component: ManageWardens }
-    ]
-  },
+// 🧑‍💼 Admin
+{
+path: 'admin',
+canActivate: [authGuard, adminGuard],
+children: [
+{ path: '', component: AdminDashboard },
+{ path: 'manage-rooms', component: ManageRooms },
+{ path: 'manage-students', component: ManageStudents },
+{ path: 'manage-wardens', component: ManageWardens }
+]
+},
 
-  // ✅ Safe fallback
-  { path: '**', redirectTo: '' }
+// ✅ Safe fallback
+{ path: '**', redirectTo: '' }
 ];
 
 // ===============================
 // ✅ APPLICATION CONFIG
 // ===============================
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([jwtInterceptor])
-    )
-  ]
+providers: [
+provideRouter(routes, withComponentInputBinding()),
+provideHttpClient(
+withFetch(),
+withInterceptors([jwtInterceptor])
+)
+]
 };
