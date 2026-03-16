@@ -1,42 +1,57 @@
-<div class="otp-container">
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+  <div class="logo">🏠 HostelEase</div>
+</nav>
 
-  <h2>🔐 Verify OTP</h2>
+<!-- ================= OTP PAGE ================= -->
+<div class="otp-page">
 
-  <p class="info">
-    Enter the OTP sent to your registered email
-  </p>
+  <div class="otp-card">
 
-  <form (ngSubmit)="verifyOtp()" #otpForm="ngForm">
+    <h2>🔐 Verify OTP</h2>
 
-    <input
-      type="text"
-      name="otp"
-      [(ngModel)]="otp"
-      placeholder="Enter OTP"
-      maxlength="6"
-      required
-    />
+    <p class="info">
+      Enter the OTP sent to your registered email
+    </p>
 
-    <button type="submit" [disabled]="loading || !otpForm.valid">
-      {{ loading ? 'Verifying...' : 'Verify OTP' }}
-    </button>
+    <form (ngSubmit)="verifyOtp()" #otpForm="ngForm">
 
-  </form>
+      <input
+        type="text"
+        name="otp"
+        [(ngModel)]="otp"
+        placeholder="Enter OTP"
+        maxlength="6"
+        required
+      />
 
-  <!-- Success -->
-  <p class="success" *ngIf="success">
-    ✅ {{ success }}
-  </p>
+      <button type="submit" [disabled]="loading || !otpForm.valid">
+        {{ loading ? 'Verifying...' : 'Verify OTP' }}
+      </button>
 
-  <!-- Error -->
-  <p class="error" *ngIf="error">
-    ❌ {{ error }}
-  </p>
+    </form>
 
-  <div class="actions">
-    <button class="link-btn" (click)="backToLogin()">
-      ← Back to Login
-    </button>
+    <!-- Success -->
+    <p class="success" *ngIf="success">
+      ✅ {{ success }}
+    </p>
+
+    <!-- Error -->
+    <p class="error" *ngIf="error">
+      ❌ {{ error }}
+    </p>
+
+    <div class="actions">
+      <button class="link-btn" (click)="backToLogin()">
+        ← Back to Login
+      </button>
+    </div>
+
   </div>
 
 </div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <p>© 2026 HostelEase | Smart Hostel Management System</p>
+</footer>

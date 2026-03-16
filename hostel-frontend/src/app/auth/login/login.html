@@ -1,61 +1,71 @@
-<div class="login-container">
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+  <div class="logo">🏠 HostelEase</div>
+</nav>
 
-  <h2>🔐 Login</h2>
-  <p class="subtitle">
-    Enter your username and password to receive OTP
-  </p>
+<!-- ================= LOGIN PAGE ================= -->
+<div class="login-page">
 
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+  <div class="login-card">
 
-    <!-- Username -->
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        [(ngModel)]="credentials.username"
-        required
-        autocomplete="username"
-        placeholder="Enter username"
-      />
-    </div>
+    <h2>🔐 Login</h2>
+    <p class="subtitle">
+      Enter your username and password to receive OTP
+    </p>
 
-    <!-- Password -->
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        [(ngModel)]="credentials.password"
-        required
-        autocomplete="current-password"
-        placeholder="Enter password"
-      />
-    </div>
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
 
-    <!-- Error Message -->
-    <div class="error" *ngIf="errorMessage">
-      ❌ {{ errorMessage }}
-    </div>
+      <!-- Username -->
+      <div class="form-group">
+        <label>Username</label>
+        <input
+          type="text"
+          name="username"
+          [(ngModel)]="credentials.username"
+          required
+          placeholder="Enter username"
+        />
+      </div>
 
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      [disabled]="loading || !loginForm.valid"
-    >
-      {{ loading ? 'Sending OTP...' : 'Login & Send OTP' }}
-    </button>
+      <!-- Password -->
+      <div class="form-group">
+        <label>Password</label>
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="credentials.password"
+          required
+          placeholder="Enter password"
+        />
+      </div>
 
-  </form>
+      <!-- Error Message -->
+      <div class="status error" *ngIf="errorMessage">
+        ❌ {{ errorMessage }}
+      </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <p>
+      <!-- Submit Button -->
+      <button
+        class="login-btn"
+        type="submit"
+        [disabled]="loading || !loginForm.valid"
+      >
+        {{ loading ? 'Sending OTP...' : 'Login & Send OTP' }}
+      </button>
+
+    </form>
+
+    <!-- Register -->
+    <div class="register-link">
       Don’t have an account?
       <a (click)="goToRegister()">Register</a>
-    </p>
+    </div>
+
   </div>
 
 </div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <p>© 2026 HostelEase | Smart Hostel Management System</p>
+</footer>

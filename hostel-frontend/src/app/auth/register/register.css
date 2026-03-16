@@ -1,137 +1,195 @@
-/* ============ Register Page Background ============ */
-.register-page {
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #f4fff7, #d9f8e3, #b9f0cc);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 1s ease;
+/* ================= NAVBAR ================= */
+
+.navbar{
+  width:100%;
+  height:70px;
+  background:white;
+  display:flex;
+  align-items:center;
+  padding:0 8%;
+  box-shadow:0 3px 12px rgba(0,0,0,0.08);
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:100;
 }
 
-/* ============ Register Card ============ */
-.register-card {
-  width: 100%;
-  max-width: 460px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(14px);
-  padding: 45px 40px;
-  border-radius: 25px;
-  box-shadow: 0 25px 50px rgba(34, 197, 94, 0.25);
-  text-align: center;
-  animation: fadeUp 1.2s ease;
+.logo{
+  font-size:1.4rem;
+  font-weight:700;
+  color:#16a34a;
 }
 
-/* ============ Heading ============ */
-.register-card h2 {
-  font-size: 2rem;
-  color: #14532d;
-  margin-bottom: 5px;
+/* ================= REGISTER PAGE ================= */
+
+.register-page{
+  min-height:calc(100vh - 140px);
+
+  background:linear-gradient(to bottom right,#f4fff7,#d9f8e3,#b9f0cc);
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  padding-top:90px;
+  padding-bottom:40px;
+
+  animation:fadeIn 1s ease;
 }
 
-.subtitle {
-  font-size: 0.95rem;
-  color: #4b5563;
-  margin-bottom: 30px;
+/* ================= REGISTER CARD ================= */
+
+.register-card{
+  width:100%;
+  max-width:460px;
+
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(14px);
+
+  padding:45px 40px;
+  border-radius:25px;
+
+  box-shadow:0 25px 50px rgba(34,197,94,0.25);
+
+  text-align:center;
+
+  animation:fadeUp 1.2s ease;
 }
 
-/* ============ Form Fields ============ */
-.form-group {
-  margin-bottom: 18px;
+/* ================= HEADING ================= */
+
+.register-card h2{
+  font-size:2rem;
+  color:#14532d;
+  margin-bottom:5px;
 }
 
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 14px 18px;
-  border-radius: 30px;
-  border: 1.5px solid #bbf7d0;
-  outline: none;
-  font-size: 0.95rem;
-  background: white;
-  transition: all 0.3s ease;
+.subtitle{
+  font-size:0.95rem;
+  color:#4b5563;
+  margin-bottom:30px;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+/* ================= FORM FIELDS ================= */
+
+.form-group{
+  margin-bottom:18px;
 }
 
-/* ============ Button ============ */
-.register-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 14px;
-  border: none;
-  border-radius: 30px;
-  background: linear-gradient(135deg, #4ade80, #16a34a);
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.35s ease;
-  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.35);
+.form-group input{
+  width:100%;
+  padding:14px 18px;
+
+  border-radius:30px;
+  border:1.5px solid #bbf7d0;
+
+  outline:none;
+  font-size:0.95rem;
+
+  background:white;
+
+  transition:all 0.3s ease;
 }
 
-.register-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.form-group input:focus{
+  border-color:#22c55e;
+  box-shadow:0 0 0 4px rgba(34,197,94,0.15);
 }
 
-.register-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(34, 197, 94, 0.45);
+/* ================= BUTTON ================= */
+
+.register-btn{
+  width:100%;
+  margin-top:10px;
+
+  padding:14px;
+
+  border:none;
+  border-radius:30px;
+
+  background:linear-gradient(135deg,#4ade80,#16a34a);
+
+  color:white;
+  font-size:1rem;
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:all 0.35s ease;
+
+  box-shadow:0 10px 20px rgba(34,197,94,0.35);
 }
 
-/* ============ Status Messages ============ */
-.status {
-  margin-top: 15px;
-  font-size: 0.9rem;
+.register-btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
 }
 
-.status.success {
-  color: #16a34a;
+.register-btn:hover:not(:disabled){
+  transform:translateY(-3px);
+  box-shadow:0 15px 30px rgba(34,197,94,0.45);
 }
 
-.status.error {
-  color: #dc2626;
+/* ================= STATUS ================= */
+
+.status{
+  margin-top:15px;
+  font-size:0.9rem;
 }
 
-/* ============ Login Link ============ */
-.login-link {
-  margin-top: 25px;
-  font-size: 0.9rem;
-  color: #374151;
+.status.success{
+  color:#16a34a;
 }
 
-.login-link a {
-  color: #16a34a;
-  font-weight: 600;
-  cursor: pointer;
-  margin-left: 4px;
+.status.error{
+  color:#dc2626;
 }
 
-.login-link a:hover {
-  text-decoration: underline;
+/* ================= LOGIN LINK ================= */
+
+.login-link{
+  margin-top:25px;
+  font-size:0.9rem;
+  color:#374151;
 }
 
-/* ============ Animations ============ */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
+.login-link a{
+  color:#16a34a;
+  font-weight:600;
+  cursor:pointer;
+  margin-left:4px;
+}
+
+.login-link a:hover{
+  text-decoration:underline;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+  width:100%;
+  text-align:center;
+  padding:18px;
+  background:white;
+  color:#6b7280;
+  font-size:0.85rem;
+  border-top:1px solid #e5e7eb;
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(40px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  to{
+    opacity:1;
+    transform:translateY(0);
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
 }
