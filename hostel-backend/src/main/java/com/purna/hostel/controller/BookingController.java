@@ -6,17 +6,16 @@ import com.purna.hostel.entity.User;
 import com.purna.hostel.repository.BookingRepository;
 import com.purna.hostel.repository.RoomRepository;
 import com.purna.hostel.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/bookings")
-@CrossOrigin(origins = "http://localhost:4200") // frontend Angular
+@CrossOrigin(origins = "http://localhost:4200")
 public class BookingController {
 
     @Autowired
@@ -28,66 +27,99 @@ public class BookingController {
     @Autowired
     private UserRepository userRepository;
 
-    // ✅ Create Booking (POST)
+    // ================================
+    // ✅ CREATE BOOKING
+    // ================================
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestBody Booking bookingRequest) {
+
         try {
+
+            if (bookingRequest.getUser() == null || bookingRequest.getRoom() == null) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of("message", "User or Room missing in request"));
+            }
+
             Optional<User> userOpt = userRepository.findById(bookingRequest.getUser().getId());
             Optional<Room> roomOpt = roomRepository.findById(bookingRequest.getRoom().getId());
 
             if (userOpt.isEmpty() || roomOpt.isEmpty()) {
-                return ResponseEntity.badRequest().body("Invalid user or room ID");
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of("message", "Invalid user or room ID"));
             }
 
             Room room = roomOpt.get();
 
-            // check if room is available
+            // Check if room is available
             if (!room.getStatus().equalsIgnoreCase("AVAILABLE")) {
-                return ResponseEntity.badRequest().body("Room is not available for booking");
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of("message", "Room is not available for booking"));
             }
 
-            // create booking
+            // Create booking
             Booking booking = new Booking();
             booking.setUser(userOpt.get());
             booking.setRoom(room);
             booking.setStartDate(bookingRequest.getStartDate());
             booking.setEndDate(bookingRequest.getEndDate());
             booking.setStatus("ACTIVE");
+
             bookingRepository.save(booking);
 
-            // mark room as booked
+            // Update room status
             room.setStatus("BOOKED");
             roomRepository.save(room);
 
-            return ResponseEntity.ok("Room booked successfully");
+            return ResponseEntity.ok(
+                    Map.of("message", "Room booked successfully")
+            );
+
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(Map.of("message", "Server error: " + e.getMessage()));
         }
     }
 
-    // ✅ Get all bookings (GET)
+    // ================================
+    // ✅ GET ALL BOOKINGS
+    // ================================
     @GetMapping
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
-    // ✅ Cancel booking (PUT)
+    // ================================
+    // ✅ CANCEL BOOKING
+    // ================================
     @PutMapping("/{id}/cancel")
     public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
+
         Optional<Booking> bookingOpt = bookingRepository.findById(id);
+
         if (bookingOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                    .status(404)
+                    .body(Map.of("message", "Booking not found"));
         }
 
         Booking booking = bookingOpt.get();
         booking.setStatus("CANCELLED");
         bookingRepository.save(booking);
 
-        // make room available again
+        // Make room available again
         Room room = booking.getRoom();
         room.setStatus("AVAILABLE");
         roomRepository.save(room);
 
-        return ResponseEntity.ok("Booking cancelled successfully");
+        return ResponseEntity.ok(
+                Map.of("message", "Booking cancelled successfully")
+        );
     }
 }
