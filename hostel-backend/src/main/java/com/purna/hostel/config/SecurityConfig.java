@@ -50,7 +50,10 @@ public class SecurityConfig {
                         "/error"
                 ).permitAll()
 
-                // ✅ TEMP: Allow Admin APIs for testing
+                // 🔥 ✅ ADD THIS (IMPORTANT)
+                .requestMatchers("/api/payments/**").permitAll()
+
+                // ✅ TEMP: Allow Admin APIs
                 .requestMatchers("/api/admin/**").permitAll()
 
                 // 🧑‍🏫 Warden APIs
