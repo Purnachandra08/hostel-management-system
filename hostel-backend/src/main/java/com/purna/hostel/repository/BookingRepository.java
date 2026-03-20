@@ -1,7 +1,6 @@
 package com.purna.hostel.repository;
 
 import com.purna.hostel.entity.Booking;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,19 +11,39 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // =========================
-    // FIND BOOKINGS BY USER
+    // BASIC FETCH
     // =========================
     List<Booking> findByUser_Id(Long userId);
 
-    // =========================
-    // FIND BOOKINGS BY ROOM
-    // =========================
     List<Booking> findByRoom_Id(Long roomId);
-    
+
+    // =========================
+    // STATUS BASED
+    // =========================
     List<Booking> findByUser_IdAndStatusIgnoreCase(Long userId, String status);
-    // =========================
-    // COUNT BOOKINGS BY STATUS
-    // =========================
+
     long countByStatusIgnoreCase(String status);
 
+    // =========================
+    // 🎯 ACADEMIC YEAR LOGIC
+    // =========================
+
+    // ✅ Check if already booked (STRICT RULE)
+    boolean existsByUser_IdAndAcademicYearAndIsActiveTrue(Long userId, String academicYear);
+
+    // ✅ Get active booking for a student
+    Optional<Booking> findByUser_IdAndAcademicYearAndIsActiveTrue(Long userId, String academicYear);
+
+    // ✅ Get all bookings of a year
+    List<Booking> findByAcademicYear(String academicYear);
+
+    // =========================
+    // 🔥 ROOM CAPACITY LOGIC
+    // =========================
+
+    // ✅ Count students in a room for a year
+    long countByRoom_IdAndAcademicYearAndIsActiveTrue(Long roomId, String academicYear);
+
+    // ✅ Get all active bookings of a room (for admin view)
+    List<Booking> findByRoom_IdAndIsActiveTrue(Long roomId);
 }

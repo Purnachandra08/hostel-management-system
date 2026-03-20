@@ -11,8 +11,15 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 🔗 RELATION (BETTER THAN JUST ID)
+    @ManyToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
     private Long userId;
-    private Long bookingId;
+
+    // 🎯 ACADEMIC YEAR
+    private String academicYear;
 
     private double roomFee;
     private double messFee;
@@ -22,14 +29,20 @@ public class Payment {
 
     private LocalDateTime paymentDate;
 
-    // Getters & Setters
+    // ======================
+    // GETTERS & SETTERS
+    // ======================
+
     public Long getId() { return id; }
+
+    public Booking getBooking() { return booking; }
+    public void setBooking(Booking booking) { this.booking = booking; }
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public Long getBookingId() { return bookingId; }
-    public void setBookingId(Long bookingId) { this.bookingId = bookingId; }
+    public String getAcademicYear() { return academicYear; }
+    public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
 
     public double getRoomFee() { return roomFee; }
     public void setRoomFee(double roomFee) { this.roomFee = roomFee; }

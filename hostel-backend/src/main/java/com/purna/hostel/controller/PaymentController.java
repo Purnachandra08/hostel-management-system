@@ -5,38 +5,66 @@ import com.purna.hostel.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
+    // =========================
     // ✅ GET FEE DETAILS
+    // =========================
     @GetMapping("/fee/{userId}")
-    public Payment getFee(@PathVariable Long userId) {
-        return paymentService.calculateFee(userId);
+    public ResponseEntity<?> getFee(@PathVariable Long userId) {
+        try {
+            Payment payment = paymentService.calculateFee(userId);
+            return ResponseEntity.ok(payment);
+        } catch (Exception e) {
+            if (e.getMessage().equals("No active booking found for this year")) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("message", "Please book a room first"));
+            }
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
+    // =========================
     // ✅ PAY FEE
+    // =========================
     @PostMapping("/pay/{userId}")
-    public Payment payFee(@PathVariable Long userId) {
-        return paymentService.makePayment(userId);
+    public ResponseEntity<?> payFee(@PathVariable Long userId) {
+        try {
+            Payment payment = paymentService.makePayment(userId);
+            return ResponseEntity.ok(payment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
-    // ✅ PAYMENT HISTORY (FIXED)
+    // =========================
+    // ✅ STUDENT PAYMENT HISTORY
+    // =========================
     @GetMapping("/history/{userId}")
-    public List<Payment> getStudentPayments(@PathVariable Long userId) {
-        return paymentService.getStudentPayments(userId);
+    public ResponseEntity<List<Payment>> getStudentPayments(@PathVariable Long userId) {
+        List<Payment> payments = paymentService.getStudentPayments(userId);
+        return ResponseEntity.ok(payments);
     }
 
+    // =========================
     // ✅ ADMIN: ALL PAYMENTS
+    // =========================
     @GetMapping("/all")
-    public List<Payment> getAllPayments() {
-        return paymentService.getAllPayments();
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        List<Payment> payments = paymentService.getAllPayments();
+        return ResponseEntity.ok(payments);
     }
 }

@@ -1,6 +1,7 @@
 package com.purna.hostel.config;
 
 import com.purna.hostel.security.JwtAuthFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,10 +41,10 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // ✅ Allow Preflight
+                // ✅ Allow preflight requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // 🔓 Public APIs
+                // 🔓 Public Auth APIs
                 .requestMatchers(
                         "/api/auth/register",
                         "/api/auth/login",
@@ -50,10 +52,12 @@ public class SecurityConfig {
                         "/error"
                 ).permitAll()
 
-                // 🔥 ✅ ADD THIS (IMPORTANT)
+                // 🔥 TEMP: Allow core APIs for testing
+                .requestMatchers("/api/rooms/**").permitAll()
+                .requestMatchers("/api/bookings/**").permitAll()
                 .requestMatchers("/api/payments/**").permitAll()
 
-                // ✅ TEMP: Allow Admin APIs
+                // 🔥 Admin (temporary open)
                 .requestMatchers("/api/admin/**").permitAll()
 
                 // 🧑‍🏫 Warden APIs
@@ -62,17 +66,18 @@ public class SecurityConfig {
                 // 👨‍🎓 Student APIs
                 .requestMatchers("/api/student/**").hasAuthority("ROLE_STUDENT")
 
-                // 🔒 Everything else
+                // 🔒 Everything else requires login
                 .anyRequest().authenticated()
             )
 
+            // 🔐 JWT Filter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     // =========================
-    // 🌐 CORS Configuration
+    // 🌐 CORS CONFIG
     // =========================
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -87,7 +92,6 @@ public class SecurityConfig {
         );
 
         config.setAllowedHeaders(List.of("*"));
-
         config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source =

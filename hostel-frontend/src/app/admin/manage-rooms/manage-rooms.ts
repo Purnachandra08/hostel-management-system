@@ -6,8 +6,8 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-manage-rooms',
-  standalone: true, // ✅ Standalone component (important)
-  imports: [CommonModule, FormsModule, CurrencyPipe], // ✅ Fixes ngModel + currency pipe errors
+  standalone: true,
+  imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './manage-rooms.html',
   styleUrls: ['./manage-rooms.css']
 })
@@ -20,6 +20,9 @@ export class ManageRooms implements OnInit {
     pricePerMonth: 0,
   };
 
+  successMessage: string = '';
+  errorMessage: string = '';
+
   private baseUrl = 'http://localhost:8080/api/rooms';
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -31,45 +34,65 @@ export class ManageRooms implements OnInit {
   // ✅ Fetch all rooms
   loadRooms(): void {
     this.http.get<any[]>(this.baseUrl).subscribe({
-      next: (data) => (this.rooms = data),
-      error: (err) => console.error('Error loading rooms', err)
+      next: (data) => this.rooms = data,
+      error: (err) => this.showError('Failed to load rooms: ' + err.message)
     });
   }
 
   // ✅ Add a new room
   addRoom(): void {
+    this.clearMessages();
+
     if (!this.newRoom.roomNumber || !this.newRoom.type) {
-      alert('Please fill all required fields.');
+      this.showError('Please fill all required fields.');
       return;
     }
 
     this.http.post(this.baseUrl, this.newRoom).subscribe({
-      next: () => {
-        alert('Room added successfully!');
+      next: (data) => {
+        this.showSuccess('Room added successfully!');
         this.loadRooms();
         this.newRoom = { roomNumber: '', type: '', capacity: 1, pricePerMonth: 0 };
       },
-      error: (err) => console.error('Error adding room', err)
+      error: (err) => this.showError('Error adding room: ' + err.error?.message || err.message)
     });
   }
 
   // ✅ Delete room
   deleteRoom(id: number): void {
-    if (confirm('Are you sure you want to delete this room?')) {
-      this.http.delete(`${this.baseUrl}/${id}`).subscribe({
-        next: () => {
-          alert('Room deleted successfully!');
-          this.loadRooms();
-        },
-        error: (err) => console.error('Error deleting room', err)
-      });
-    }
+    this.clearMessages();
+
+    if (!confirm('Are you sure you want to delete this room?')) return;
+
+    this.http.delete(`${this.baseUrl}/${id}`).subscribe({
+      next: () => {
+        this.showSuccess('Room deleted successfully!');
+        this.loadRooms();
+      },
+      error: (err) => this.showError('Error deleting room: ' + err.error?.message || err.message)
+    });
   }
 
-  // ✅ Logout function
+  // ✅ Logout
   logout(): void {
     localStorage.clear();
     sessionStorage.clear();
     this.router.navigate(['/login']);
+  }
+
+  // ✅ Helper functions
+  private showSuccess(msg: string) {
+    this.successMessage = msg;
+    setTimeout(() => this.successMessage = '', 5000); // hide after 5s
+  }
+
+  private showError(msg: string) {
+    this.errorMessage = msg;
+    setTimeout(() => this.errorMessage = '', 7000); // hide after 7s
+  }
+
+  private clearMessages() {
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 }

@@ -5,11 +5,11 @@ body {
   background: linear-gradient(to bottom right, #f4fff7, #d9f8e3, #b9f0cc);
   color: #1e2a23;
   overflow-x: hidden;
-  padding-top: 80px;
   animation: fadeIn 1s ease-in-out;
+  padding-top: 80px;
 }
 
-/* 🌿 Navbar */
+/* 🌿 Navbar (reuse from dashboard) */
 .navbar {
   position: fixed;
   top: 0;
@@ -19,167 +19,164 @@ body {
   z-index: 1000;
   backdrop-filter: blur(10px);
   animation: slideDown 0.8s ease;
+}
+
+.navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 60px;
 }
 
-.navbar h2 {
+.logo {
   font-size: 1.8rem;
   font-weight: 600;
   color: #28a745;
   letter-spacing: 1px;
-  animation: fadeUp 1s ease;
 }
 
-.navbar nav a {
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-btn {
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
-  margin-left: 20px;
-  color: #14532d;
-  padding: 10px 20px;
+  padding: 10px 24px;
   border-radius: 25px;
   transition: all 0.3s ease;
+  cursor: pointer;
+  color: #14532d;
 }
 
-.navbar nav a:hover,
-.navbar nav a.active {
+.nav-btn.active {
   background: #eafff2;
   transform: scale(1.05);
 }
 
-/* 🌿 Booking Form Container */
-.book-container {
+.nav-btn.logout {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
+}
+
+.nav-btn.logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(34, 197, 94, 0.5);
+}
+
+/* 🌿 Pay Fee Container */
+.pay-container {
   max-width: 600px;
-  margin: 120px auto 40px auto;
+  margin: 120px auto 80px auto;
   background: rgba(255, 255, 255, 0.95);
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 6px 25px rgba(52, 211, 153, 0.15);
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.15);
   animation: fadeUp 1s ease-in-out;
   backdrop-filter: blur(12px);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.book-container:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 35px rgba(34, 197, 94, 0.25);
+.pay-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25);
 }
 
-.book-container h2 {
+.pay-container h2 {
   text-align: center;
   color: #14532d;
   margin-bottom: 25px;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 600;
   animation: textGlow 2.5s infinite alternate;
 }
 
-/* 🌿 Form Elements */
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+/* 🌿 Fee Card */
+.card {
+  background: #ffffffd5;
+  border-radius: 18px;
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-label {
-  font-weight: 600;
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25);
+}
+
+.card p {
+  font-size: 1rem;
+  margin: 8px 0;
+}
+
+.card h3 {
+  font-size: 1.3rem;
   color: #166534;
+  margin-top: 15px;
 }
 
-select,
-input[type="date"] {
-  padding: 12px 14px;
-  border: 1px solid #c0eacb;
-  border-radius: 12px;
-  outline: none;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: inset 0 1px 3px rgba(34, 197, 94, 0.1);
-}
-
-select:focus,
-input[type="date"]:focus {
-  border-color: #4ade80;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
-}
-
-/* 🌿 Button */
-button {
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #4ade80, #22c55e);
+/* 🌿 Payment Status */
+.status {
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 15px;
+  width: fit-content;
+  margin-top: 12px;
   color: white;
+}
+
+.paid {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+}
+
+.pending {
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+}
+
+/* 🌿 Buttons */
+button {
+  padding: 12px 20px;
   font-weight: 600;
   font-size: 1rem;
   border: none;
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 15px;
   box-shadow: 0 3px 12px rgba(34, 197, 94, 0.4);
 }
 
 button:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 18px rgba(34, 197, 94, 0.5);
 }
 
-/* 🌿 Message Text */
-.message {
+.history-btn {
+  background: #eafff2;
+  color: #14532d;
+  margin-left: 15px;
+}
+
+.history-btn:hover {
+  background: #bbf7d0;
+}
+
+/* 🌿 No Fee Message */
+.no-fee {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 20px;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #14532d;
   background: #eafff2;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 12px;
+  padding: 12px;
   animation: fadeIn 1s ease;
-}
-
-/* 🌿 Current Booking Table */
-.current-booking {
-  margin-top: 40px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.15);
-  animation: fadeUp 1s ease-in-out;
-}
-
-.current-booking h3 {
-  text-align: center;
-  color: #166534;
-  margin-bottom: 20px;
-  font-size: 1.6rem;
-  font-weight: 600;
-}
-
-.current-booking table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.current-booking th,
-.current-booking td {
-  text-align: left;
-  padding: 10px 12px;
-  border-bottom: 1px solid #c0eacb;
-  font-weight: 500;
-  color: #14532d;
-}
-
-.current-booking th {
-  background: rgba(34, 197, 94, 0.1);
-  border-radius: 8px;
-}
-
-.current-booking tr:hover {
-  background: rgba(34, 197, 94, 0.05);
-  transform: scale(1.01);
-  transition: all 0.2s ease;
 }
 
 /* 🌿 Footer */
@@ -188,9 +185,13 @@ button:hover {
   color: #14532d;
   text-align: center;
   padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
   font-size: 0.9rem;
   backdrop-filter: blur(10px);
-  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+  animation: slideUp 1s ease;
 }
 
 /* 🌿 Animations */

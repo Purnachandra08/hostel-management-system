@@ -2,13 +2,13 @@
 <nav class="navbar">
   <div class="nav-logo">🏫 Hostel Admin</div>
   <ul class="nav-links">
-    <li><a href="/warden-dashboard">Dashboard</a></li>
-    <li><a href="/manage-rooms" class="active">Manage Rooms</a></li>
-    <li><a href="/view-bookings">Bookings</a></li>
-    <li><a href="/view-students">Students</a></li>
-    <li><a href="/complaints">Complaints</a></li>
-    <li><a href="/warden-profile">Profile</a></li>
-    <li><a href="/login" (click)="logout()">Logout</a></li>
+    <li><a routerLink="/warden-dashboard">Dashboard</a></li>
+    <li><a routerLink="/manage-rooms" class="active">Manage Rooms</a></li>
+    <li><a routerLink="/view-bookings">Bookings</a></li>
+    <li><a routerLink="/view-students">Students</a></li>
+    <li><a routerLink="/complaints">Complaints</a></li>
+    <li><a routerLink="/warden-profile">Profile</a></li>
+    <li><a href="#" (click)="logout()">Logout</a></li>
   </ul>
 </nav>
 
@@ -17,11 +17,18 @@
   <h1>🏠 Manage Hostel Rooms</h1>
 </header>
 
+<!-- 🌿 Messages -->
+<div class="messages">
+  <div *ngIf="successMessage" class="alert success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert error">{{ errorMessage }}</div>
+</div>
+
 <!-- 🌿 Main Content -->
 <div class="content">
+
+  <!-- Add Room Form -->
   <div class="form-container">
     <h2>Add New Room</h2>
-
     <form (ngSubmit)="addRoom()" class="room-form">
       <div class="form-group">
         <label>Room Number</label>
@@ -31,7 +38,7 @@
       <div class="form-group">
         <label>Type</label>
         <select [(ngModel)]="newRoom.type" name="type" required>
-          <option value="" disabled selected>Select Room Type</option>
+          <option value="" disabled>Select Room Type</option>
           <option value="Single">Single</option>
           <option value="Double">Double</option>
           <option value="Triple">Triple</option>
@@ -52,9 +59,9 @@
     </form>
   </div>
 
+  <!-- Rooms Table -->
   <div class="table-container">
     <h2>All Rooms</h2>
-
     <table class="room-table">
       <thead>
         <tr>
@@ -67,18 +74,19 @@
           <th>Actions</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let room of rooms">
           <td>{{ room.id }}</td>
           <td>{{ room.roomNumber }}</td>
           <td>{{ room.type }}</td>
           <td>{{ room.capacity }}</td>
-          <td>{{ room.pricePerMonth | currency:'INR' }}</td>
+          <td>{{ room.pricePerMonth | currency:'INR':'symbol':'1.0-0' }}</td>
           <td>
             <span
-              [class.available]="room.status === 'AVAILABLE'"
-              [class.occupied]="room.status === 'OCCUPIED'">
+              [ngClass]="{
+                'status-available': room.status === 'AVAILABLE',
+                'status-occupied': room.status === 'OCCUPIED'
+              }">
               {{ room.status }}
             </span>
           </td>
@@ -93,6 +101,7 @@
       </tbody>
     </table>
   </div>
+
 </div>
 
 <!-- 🌿 Footer -->

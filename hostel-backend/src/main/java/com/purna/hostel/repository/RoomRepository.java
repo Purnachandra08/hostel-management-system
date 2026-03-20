@@ -9,7 +9,13 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    // Find rooms by status (AVAILABLE / OCCUPIED etc.)
+    // =========================
+    // AVAILABLE ROOMS
+    // =========================
     List<Room> findByStatusIgnoreCase(String status);
 
+    // =========================
+    // ADMIN DASHBOARD STATS
+    // =========================
+    long countByStatusIgnoreCase(String status);
 }

@@ -63,39 +63,31 @@
     </div>
 
     <!-- 🌿 Dashboard Cards -->
-    <div class="cards">
+    <div class="card-grid">
 
-      <!-- Rooms -->
-      <div class="card manage" routerLink="/admin/manage-rooms">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/869/869869.png"
-          alt="Manage Rooms"
-        />
-        <h3>Manage Rooms</h3>
-        <p>Allocate, update, and view hostel rooms.</p>
-      </div>
+  <!-- Existing cards -->
+  <a routerLink="/admin/manage-rooms" class="card">
+    <h3>🏠 Manage Rooms</h3>
+    <p>Add, update or delete hostel rooms.</p>
+  </a>
 
-      <!-- Students -->
-      <div class="card student" routerLink="/admin/manage-students">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png"
-          alt="Manage Students"
-        />
-        <h3>Manage Students</h3>
-        <p>View and update student information.</p>
-      </div>
+  <a routerLink="/admin/manage-students" class="card">
+    <h3>🎓 Manage Students</h3>
+    <p>View and control student records.</p>
+  </a>
 
-      <!-- Wardens -->
-      <div class="card warden" routerLink="/admin/manage-wardens">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/1995/1995574.png"
-          alt="Manage Wardens"
-        />
-        <h3>Manage Wardens</h3>
-        <p>Add, update, and assign wardens to hostels.</p>
-      </div>
+  <a routerLink="/admin/manage-wardens" class="card">
+    <h3>🧑‍💼 Manage Wardens</h3>
+    <p>Handle all warden operations.</p>
+  </a>
 
-    </div>
+  <!-- 💰 NEW CARD -->
+  <a routerLink="/admin/payments" class="card payment-card">
+    <h3>💰 Manage Payments</h3>
+    <p>View all student payments, track revenue and manage fee status.</p>
+  </a>
+
+</div>
 
   </section>
 

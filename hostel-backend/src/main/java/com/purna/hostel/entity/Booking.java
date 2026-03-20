@@ -1,30 +1,46 @@
 package com.purna.hostel.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "booking")
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 🔗 USER RELATION
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // 🔗 ROOM RELATION
     @ManyToOne
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    // 🎯 ACADEMIC YEAR (IMPORTANT)
+    @Column(name = "academic_year", nullable = false)
+    private String academicYear;
 
-    // ACTIVE, COMPLETED, CANCELLED
-    private String status;
+    // ACTIVE / CANCELLED
+    @Column(nullable = false)
+    private String status = "ACTIVE";
 
-    // getters and setters
+    // TRUE = ACTIVE BOOKING
+    @Column(name = "is_active")
+    private boolean isActive = true;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    // ======================
+    // GETTERS & SETTERS
+    // ======================
+
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
@@ -32,12 +48,14 @@ public class Booking {
     public Room getRoom() { return room; }
     public void setRoom(Room room) { this.room = room; }
 
-    public LocalDate getStartDate() { return startDate; }
-    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
-
-    public LocalDate getEndDate() { return endDate; }
-    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public String getAcademicYear() { return academicYear; }
+    public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }

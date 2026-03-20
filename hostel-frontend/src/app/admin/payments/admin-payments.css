@@ -1,0 +1,15 @@
+.container {
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+.paid {
+  color: green;
+}
+
+.pending {
+  color: red;
+}

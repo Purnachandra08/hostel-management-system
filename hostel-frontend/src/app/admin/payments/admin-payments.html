@@ -1,0 +1,22 @@
+<div class="container">
+
+  <h2>💰 Admin Payment Management</h2>
+
+  <h3>Total Collected: ₹{{total}}</h3>
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Total</th>
+      <th>Status</th>
+    </tr>
+
+    <tr *ngFor="let p of payments">
+      <td>{{p.id}}</td>
+      <td>₹{{p.totalFee}}</td>
+      <td>{{p.paymentStatus}}</td>
+    </tr>
+
+  </table>
+
+</div>

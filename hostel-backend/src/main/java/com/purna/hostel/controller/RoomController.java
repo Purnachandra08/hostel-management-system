@@ -2,10 +2,13 @@ package com.purna.hostel.controller;
 
 import com.purna.hostel.entity.Room;
 import com.purna.hostel.service.RoomService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Map; // ✅ ADD THIS IMPORT
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -15,41 +18,47 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    // ✅ Get all rooms
+    // =========================
+    // ✅ GET ALL ROOMS
+    // =========================
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms() {
         return ResponseEntity.ok(roomService.getAllRooms());
     }
 
-    // ✅ Get available rooms
+    // =========================
+    // ✅ GET AVAILABLE ROOMS
+    // =========================
     @GetMapping("/available")
     public ResponseEntity<List<Room>> getAvailableRooms() {
         return ResponseEntity.ok(roomService.getAvailableRooms());
     }
 
-    // ✅ Add new room
+    // =========================
+    // ✅ ADD ROOM
+    // =========================
     @PostMapping
     public ResponseEntity<?> addRoom(@RequestBody Room room) {
         try {
             Room savedRoom = roomService.saveRoom(room);
             return ResponseEntity.ok(savedRoom);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("Error adding room: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Error adding room: " + e.getMessage()));
         }
     }
 
-    // ✅ Delete room by ID
+    // =========================
+    // ✅ DELETE ROOM
+    // =========================
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
         try {
             roomService.deleteRoom(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(Map.of("message", "Room deleted successfully"));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("Error deleting room: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Error deleting room: " + e.getMessage()));
         }
     }
 }

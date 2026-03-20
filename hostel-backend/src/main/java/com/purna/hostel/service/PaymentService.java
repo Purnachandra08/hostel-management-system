@@ -1,13 +1,16 @@
 package com.purna.hostel.service;
 
-import com.purna.hostel.entity.*;
-import com.purna.hostel.repository.*;
+import com.purna.hostel.entity.Booking;
+import com.purna.hostel.entity.MessFee;
+import com.purna.hostel.entity.Payment;
+import com.purna.hostel.repository.BookingRepository;
+import com.purna.hostel.repository.MessFeeRepository;
+import com.purna.hostel.repository.PaymentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -23,42 +26,36 @@ public class PaymentService {
     private BookingRepository bookingRepository;
 
     // =========================
-    // 🔥 COMMON METHOD (GET ACTIVE BOOKING)
+    // 🔥 CURRENT ACADEMIC YEAR
     // =========================
-    private Booking getActiveBooking(Long userId) {
-
-        List<Booking> bookings =
-                bookingRepository.findByUser_IdAndStatusIgnoreCase(userId, "ACTIVE");
-
-        if (bookings.isEmpty()) {
-            throw new RuntimeException("No active booking found");
-        }
-
-        // ✅ Get latest booking
-        return bookings.stream()
-                .max(Comparator.comparing(Booking::getId))
-                .orElseThrow(() -> new RuntimeException("Booking error"));
+    private String getCurrentAcademicYear() {
+        return "2025-2026"; // can make dynamic later
     }
 
     // =========================
-    // 🔥 GET MESS FEE SAFELY
+    // 🔥 GET ACTIVE BOOKING (CURRENT YEAR)
+    // =========================
+    private Booking getActiveBooking(Long userId) {
+        return bookingRepository
+                .findByUser_IdAndAcademicYearAndIsActiveTrue(userId, getCurrentAcademicYear())
+                .orElseThrow(() -> new RuntimeException("No active booking found for this year"));
+    }
+
+    // =========================
+    // 🔥 GET MESS FEE
     // =========================
     private double getMessFee() {
-
         List<MessFee> fees = messFeeRepository.findAll();
-
         if (fees.isEmpty()) {
-            throw new RuntimeException("Mess fee not set by admin");
+            throw new RuntimeException("Mess fee not set");
         }
-
         return fees.get(0).getAmount();
     }
 
     // =========================
-    // ✅ GET FEE DETAILS (PREVIEW)
+    // ✅ CALCULATE FEE (WITHOUT PAYMENT)
     // =========================
     public Payment calculateFee(Long userId) {
-
         Booking booking = getActiveBooking(userId);
 
         double roomFee = booking.getRoom().getPricePerMonth();
@@ -66,28 +63,29 @@ public class PaymentService {
         double total = roomFee + messFee;
 
         Payment payment = new Payment();
+        payment.setBooking(booking);
         payment.setUserId(userId);
-        payment.setBookingId(booking.getId());
+        payment.setAcademicYear(getCurrentAcademicYear());
         payment.setRoomFee(roomFee);
         payment.setMessFee(messFee);
         payment.setTotalFee(total);
         payment.setPaymentStatus("PENDING");
+        payment.setPaymentDate(null); // not paid yet
 
         return payment;
     }
 
     // =========================
-    // ✅ PAY FEE
+    // ✅ MAKE PAYMENT
     // =========================
     public Payment makePayment(Long userId) {
+        String year = getCurrentAcademicYear();
 
-        // ❌ Prevent duplicate payment
-        List<Payment> existing =
-                paymentRepository.findByUserIdAndPaymentStatus(userId, "PAID");
-
-        if (!existing.isEmpty()) {
-            throw new RuntimeException("Fee already paid!");
-        }
+        // 🔥 Prevent duplicate payment
+        paymentRepository.findByUserIdAndAcademicYear(userId, year)
+                .ifPresent(p -> {
+                    throw new RuntimeException("Already paid for this academic year");
+                });
 
         Booking booking = getActiveBooking(userId);
 
@@ -96,8 +94,9 @@ public class PaymentService {
         double total = roomFee + messFee;
 
         Payment payment = new Payment();
+        payment.setBooking(booking);
         payment.setUserId(userId);
-        payment.setBookingId(booking.getId());
+        payment.setAcademicYear(year);
         payment.setRoomFee(roomFee);
         payment.setMessFee(messFee);
         payment.setTotalFee(total);
@@ -108,14 +107,14 @@ public class PaymentService {
     }
 
     // =========================
-    // ✅ PAYMENT HISTORY
+    // ✅ GET STUDENT PAYMENT HISTORY
     // =========================
     public List<Payment> getStudentPayments(Long userId) {
         return paymentRepository.findByUserId(userId);
     }
 
     // =========================
-    // ✅ ADMIN - ALL PAYMENTS
+    // ✅ GET ALL PAYMENTS (ADMIN)
     // =========================
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
@@ -125,11 +124,9 @@ public class PaymentService {
     // ✅ UPDATE MESS FEE
     // =========================
     public MessFee updateMessFee(double amount) {
-
         List<MessFee> fees = messFeeRepository.findAll();
 
         if (fees.isEmpty()) {
-            // 👉 create new if not exists
             MessFee newFee = new MessFee();
             newFee.setAmount(amount);
             return messFeeRepository.save(newFee);
@@ -137,7 +134,6 @@ public class PaymentService {
 
         MessFee fee = fees.get(0);
         fee.setAmount(amount);
-
         return messFeeRepository.save(fee);
     }
 }

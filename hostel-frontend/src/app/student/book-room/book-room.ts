@@ -16,12 +16,12 @@ export class BookRoom implements OnInit {
 
   rooms: any[] = [];
   selectedRoomId: number | null = null;
-  startDate: string = '';
-  endDate: string = '';
   message: string = '';
   currentYear: number = new Date().getFullYear();
+  studentBooking: any = null; // ✅ Store current student booking
 
-  private baseUrl = 'http://localhost:8080/api/bookings';
+  private bookingBaseUrl = 'http://localhost:8080/api/bookings';
+  private roomBaseUrl = 'http://localhost:8080/api/rooms';
 
   constructor(
     private roomService: RoomService,
@@ -31,6 +31,7 @@ export class BookRoom implements OnInit {
 
   ngOnInit(): void {
     this.loadAvailableRooms();
+    this.loadStudentBooking(); // ✅ Load current booking on page load
   }
 
   // ================================
@@ -49,56 +50,64 @@ export class BookRoom implements OnInit {
   }
 
   // ================================
+  // Load Current Student Booking
+  // ================================
+  loadStudentBooking(): void {
+    const user = this.authService.getUser();
+    if (!user) return;
+
+    this.http.get(`${this.bookingBaseUrl}/student/${user.id}`).subscribe({
+      next: (data) => {
+        this.studentBooking = data; // Store booking details
+      },
+      error: (err) => {
+        console.log('No active booking found or error fetching booking:', err);
+        this.studentBooking = null;
+      }
+    });
+  }
+
+  // ================================
   // Book Room
   // ================================
   bookRoom(): void {
 
-    if (!this.selectedRoomId || !this.startDate || !this.endDate) {
-      this.message = 'Please fill in all fields.';
+    if (!this.selectedRoomId) {
+      this.message = 'Please select a room.';
       return;
     }
 
-    // Get logged in user from AuthService
     const user = this.authService.getUser();
-
     if (!user) {
       this.message = 'User not logged in. Please login again.';
       return;
     }
 
-    const booking = {
-      user: { id: user.id },
-      room: { id: this.selectedRoomId },
-      startDate: this.startDate,
-      endDate: this.endDate
-    };
-
-    console.log('Booking Data:', booking);
-
-    this.http.post(`${this.baseUrl}`, booking).subscribe({
-      next: () => {
-
+    this.http.post(`${this.bookingBaseUrl}/${user.id}/${this.selectedRoomId}`, {}).subscribe({
+      next: (res: any) => {
         this.message = 'Room booked successfully!';
-
-        // Reset form
         this.selectedRoomId = null;
-        this.startDate = '';
-        this.endDate = '';
 
-        // Reload rooms
+        // Reload rooms and student booking
         this.loadAvailableRooms();
+        this.loadStudentBooking();
       },
-
       error: (err) => {
-
         console.error('Error booking room:', err);
-
-        if (err.error) {
-          this.message = err.error;
+        if (err.error && err.error.message) {
+          this.message = err.error.message;
         } else {
           this.message = 'Failed to book room. Please try again.';
         }
       }
     });
   }
+
+  // ================================
+  // Logout function
+  // ================================
+  logout(): void {
+    this.authService.logout();
+  }
+
 }

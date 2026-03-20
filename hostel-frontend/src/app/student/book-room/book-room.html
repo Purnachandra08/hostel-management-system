@@ -4,7 +4,7 @@
     <a routerLink="/student-dashboard">Dashboard</a>
     <a routerLink="/book-room" class="active">Book Room</a>
     <a routerLink="/view-bookings">My Bookings</a>
-    <a routerLink="/logout">Logout</a>
+    <a href="#" (click)="logout()">Logout</a>
   </nav>
 </div>
 
@@ -14,21 +14,63 @@
   <div class="form-container">
     <label>Select Room:</label>
     <select [(ngModel)]="selectedRoomId">
-      <option value="" disabled selected>-- Select a Room --</option>
+      <option value="" disabled>-- Select a Room --</option>
       <option *ngFor="let room of rooms" [value]="room.id">
-        {{ room.roomNumber }} - {{ room.type }}
+        {{ room.roomNumber }} - {{ room.type }} - ₹{{ room.pricePerMonth }}
       </option>
     </select>
-
-    <label>Start Date:</label>
-    <input type="date" [(ngModel)]="startDate" />
-
-    <label>End Date:</label>
-    <input type="date" [(ngModel)]="endDate" />
 
     <button (click)="bookRoom()">Book Room</button>
 
     <p class="message" *ngIf="message">{{ message }}</p>
+  </div>
+
+  <!-- Current Booking -->
+  <div class="current-booking card" *ngIf="studentBooking">
+    <h3>Current Booking Details</h3>
+    <table>
+      <tr>
+        <th>Booking ID</th>
+        <td>{{ studentBooking.id }}</td>
+      </tr>
+      <tr>
+        <th>Room Number</th>
+        <td>{{ studentBooking.room.roomNumber }}</td>
+      </tr>
+      <tr>
+        <th>Room Type</th>
+        <td>{{ studentBooking.room.type }}</td>
+      </tr>
+      <tr>
+        <th>Capacity</th>
+        <td>{{ studentBooking.room.capacity }}</td>
+      </tr>
+      <tr>
+        <th>Price/Month</th>
+        <td>₹{{ studentBooking.room.pricePerMonth }}</td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td>{{ studentBooking.room.status }}</td>
+      </tr>
+      <tr>
+        <th>Academic Year</th>
+        <td>{{ studentBooking.academicYear }}</td>
+      </tr>
+      <!-- Optional: Fee info if available -->
+      <tr *ngIf="studentBooking.fee">
+        <th>Room Fee</th>
+        <td>₹{{ studentBooking.fee.roomFee }}</td>
+      </tr>
+      <tr *ngIf="studentBooking.fee">
+        <th>Mess Fee</th>
+        <td>₹{{ studentBooking.fee.messFee }}</td>
+      </tr>
+      <tr *ngIf="studentBooking.fee">
+        <th>Total Fee</th>
+        <td>₹{{ studentBooking.fee.totalFee }}</td>
+      </tr>
+    </table>
   </div>
 </div>
 

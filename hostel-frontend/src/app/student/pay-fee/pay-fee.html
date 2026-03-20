@@ -1,0 +1,63 @@
+<!-- 🌿 Navbar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="logo">🏨 Hostel Management</div>
+
+    <div class="nav-links">
+      <a routerLink="/student" class="nav-btn">Dashboard</a>
+      <a routerLink="/student/book-room" class="nav-btn">Book Room</a>
+      <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
+      <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
+      <a routerLink="/student/view-profile" class="nav-btn">Profile</a>
+      <a routerLink="/student/view-attendance" class="nav-btn">Attendance</a>
+      <a routerLink="/student/pay-fee" class="nav-btn active">Pay Fee</a>
+    </div>
+
+    <button class="nav-btn logout" (click)="authService.logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- 🌿 Main Content -->
+<div class="pay-container">
+
+  <h2>💳 Pay Hostel Fee</h2>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading">Loading fee details...</div>
+
+  <!-- Fee Card -->
+  <div *ngIf="fee" class="card">
+
+    <p>Room Fee: ₹{{ fee.roomFee }}</p>
+    <p>Mess Fee: ₹{{ fee.messFee }}</p>
+    <h3>Total: ₹{{ fee.totalFee }}</h3>
+
+    <p class="status" 
+       [ngClass]="fee.paymentStatus === 'PAID' ? 'paid' : 'pending'">
+       {{ fee.paymentStatus }}
+    </p>
+
+    <button 
+      (click)="payNow()" 
+      [disabled]="fee.paymentStatus === 'PAID'">
+      {{ paying ? 'Processing...' : 'Pay Now' }}
+    </button>
+
+    <!-- View Payment History -->
+    <button routerLink="/student/payment-history" class="history-btn">
+      View Payment History
+    </button>
+
+  </div>
+
+  <!-- No Fee Message -->
+  <div *ngIf="!loading && !fee" class="no-fee">
+    No fee details available. Please book a room first.
+  </div>
+
+</div>
+
+<!-- 🌿 Footer -->
+<footer class="footer">
+  <p>© 2025 Hostel Management System | All Rights Reserved</p>
+</footer>
