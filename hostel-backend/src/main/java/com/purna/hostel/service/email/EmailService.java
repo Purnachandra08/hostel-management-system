@@ -111,4 +111,41 @@ public class EmailService {
 
         sendEmail(toEmail, subject, body);
     }
+    
+ // ================================
+ // 7. 💳 PAYMENT SUCCESS EMAIL
+ // ================================
+ public void sendPaymentSuccessEmail(String toEmail,
+                                     String studentName,
+                                     String month,
+                                     double amount) {
+
+     String subject = "💳 Hostel Fee Payment Successful";
+
+     String body = "Dear " + studentName + ",\n\n"
+             + "Your hostel fee payment has been successfully completed.\n\n"
+             + "Month: " + month + "\n"
+             + "Amount Paid: ₹" + amount + "\n\n"
+             + "Thank you for your payment.\n\n"
+             + "Regards,\nHostel Management";
+
+     sendEmail(toEmail, subject, body);
+ }
+
+ // ================================
+ // 8. 🔔 PAYMENT REMINDER EMAIL
+ // ================================
+ public void sendPaymentReminderEmail(String toEmail,
+                                      String studentName,
+                                      String month) {
+
+     String subject = "⚠ Hostel Fee Payment Reminder";
+
+     String body = "Dear " + studentName + ",\n\n"
+             + "This is a reminder to pay your hostel fee for " + month + ".\n\n"
+             + "Please complete the payment at the earliest.\n\n"
+             + "Regards,\nHostel Management";
+
+     sendEmail(toEmail, subject, body);
+ }
 }

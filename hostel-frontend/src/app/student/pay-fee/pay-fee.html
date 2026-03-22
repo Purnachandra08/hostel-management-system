@@ -1,63 +1,157 @@
 <!-- 🌿 Navbar -->
+
 <nav class="navbar">
   <div class="navbar-container">
     <div class="logo">🏨 Hostel Management</div>
 
-    <div class="nav-links">
-      <a routerLink="/student" class="nav-btn">Dashboard</a>
-      <a routerLink="/student/book-room" class="nav-btn">Book Room</a>
-      <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
-      <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
-      <a routerLink="/student/view-profile" class="nav-btn">Profile</a>
-      <a routerLink="/student/view-attendance" class="nav-btn">Attendance</a>
-      <a routerLink="/student/pay-fee" class="nav-btn active">Pay Fee</a>
-    </div>
+```
+<div class="nav-links">
+  <a routerLink="/student" class="nav-btn">Dashboard</a>
+  <a routerLink="/student/book-room" class="nav-btn">Book Room</a>
+  <a routerLink="/student/apply-leave" class="nav-btn">Apply Leave</a>
+  <a routerLink="/student/complaints" class="nav-btn">Complaints</a>
+  <a routerLink="/student/view-profile" class="nav-btn">Profile</a>
+  <a routerLink="/student/view-attendance" class="nav-btn">Attendance</a>
+  <a routerLink="/student/pay-fee" class="nav-btn active">Pay Fee</a>
+</div>
 
-    <button class="nav-btn logout" (click)="authService.logout()">Logout</button>
+<button class="nav-btn logout" (click)="authService.logout()">Logout</button>
+```
+
   </div>
 </nav>
 
-<!-- 🌿 Main Content -->
-<div class="pay-container">
+<!-- 🌿 MAIN GRID -->
 
-  <h2>💳 Pay Hostel Fee</h2>
+<div class="main-container">
 
-  <!-- Loading Spinner -->
-  <div *ngIf="loading" class="loading">Loading fee details...</div>
+  <!-- ================= LEFT SIDE (PAYMENT) ================= -->
 
-  <!-- Fee Card -->
-  <div *ngIf="fee" class="card">
+  <div class="pay-section">
 
-    <p>Room Fee: ₹{{ fee.roomFee }}</p>
-    <p>Mess Fee: ₹{{ fee.messFee }}</p>
-    <h3>Total: ₹{{ fee.totalFee }}</h3>
+```
+<h2>💳 Pay Hostel Fee</h2>
 
-    <p class="status" 
-       [ngClass]="fee.paymentStatus === 'PAID' ? 'paid' : 'pending'">
-       {{ fee.paymentStatus }}
-    </p>
+<!-- 🔄 Loading -->
+<div *ngIf="loading" class="loading">
+  Loading fee details...
+</div>
 
-    <button 
-      (click)="payNow()" 
-      [disabled]="fee.paymentStatus === 'PAID'">
-      {{ paying ? 'Processing...' : 'Pay Now' }}
-    </button>
+<!-- ❌ No Fee -->
+<div *ngIf="!loading && !fee" class="no-fee">
+  {{ message || 'No fee details available. Please book a room first.' }}
+</div>
 
-    <!-- View Payment History -->
-    <button routerLink="/student/payment-history" class="history-btn">
-      View Payment History
-    </button>
+<!-- ✅ Fee Card -->
+<div *ngIf="fee" class="card">
+
+  <!-- 📅 Month Display -->
+  <h3 class="month">
+    {{ getMonthName(fee.month) }} {{ fee.year }}
+  </h3>
+
+  <!-- 💰 Fee Details -->
+  <p>Room Fee: ₹{{ fee.roomFee }}</p>
+  <p>Mess Fee: ₹{{ fee.messFee }}</p>
+
+  <h3 class="total">
+    Total: ₹{{ fee.totalFee }}
+  </h3>
+
+  <!-- 📌 Status -->
+  <p class="status"
+     [ngClass]="fee.paymentStatus === 'PAID' ? 'paid' : 'pending'">
+    {{ fee.paymentStatus }}
+  </p>
+
+  <!-- 📅 Payment Date -->
+  <p *ngIf="fee.paymentDate" class="date">
+    Paid On: {{ fee.paymentDate | date:'medium' }}
+  </p>
+
+  <!-- ⚠️ Monthly Reminder -->
+  <p *ngIf="fee.paymentStatus === 'PENDING'" class="warning">
+    ⚠️ Please pay this month's mess fee
+  </p>
+
+  <!-- 💳 Pay Button -->
+  <button
+    class="pay-btn"
+    (click)="payNow()"
+    [disabled]="fee.paymentStatus === 'PAID'">
+
+    {{ paying ? 'Processing...' : 'Pay Now' }}
+  </button>
+
+</div>
+```
 
   </div>
 
-  <!-- No Fee Message -->
-  <div *ngIf="!loading && !fee" class="no-fee">
-    No fee details available. Please book a room first.
+  <!-- ================= RIGHT SIDE (HISTORY) ================= -->
+
+  <div class="history-section">
+
+```
+<h3>🧾 Payment History</h3>
+
+<!-- ✅ History Table -->
+<table *ngIf="paymentHistory.length > 0" class="history-table">
+
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Room Fee</th>
+      <th>Mess Fee</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let p of paymentHistory">
+
+      <!-- 📅 Month -->
+      <td>
+        {{ getMonthName(p.month) }} {{ p.year }}
+      </td>
+
+      <!-- 💰 Fees -->
+      <td>₹{{ p.roomFee }}</td>
+      <td>₹{{ p.messFee }}</td>
+      <td class="total">₹{{ p.totalFee }}</td>
+
+      <!-- 📌 Status -->
+      <td>
+        <span 
+          [ngClass]="p.paymentStatus === 'PAID' ? 'status paid' : 'status pending'">
+          {{ p.paymentStatus }}
+        </span>
+      </td>
+
+      <!-- 📅 Date -->
+      <td>
+        {{ p.paymentDate ? (p.paymentDate | date:'medium') : '—' }}
+      </td>
+
+    </tr>
+  </tbody>
+
+</table>
+
+<!-- ❌ No History -->
+<div *ngIf="paymentHistory.length === 0" class="no-history">
+  No payment history found.
+</div>
+```
+
   </div>
 
 </div>
 
 <!-- 🌿 Footer -->
+
 <footer class="footer">
-  <p>© 2025 Hostel Management System | All Rights Reserved</p>
+  <p>© 2026 Hostel Management System | All Rights Reserved</p>
 </footer>

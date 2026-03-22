@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "payments",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "month", "year"}))
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔗 RELATION (BETTER THAN JUST ID)
+    // 🔗 RELATION
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
@@ -20,6 +21,10 @@ public class Payment {
 
     // 🎯 ACADEMIC YEAR
     private String academicYear;
+
+    // ✅ NEW (MONTHLY SYSTEM)
+    private int month;   // 1–12
+    private int year;    // 2026
 
     private double roomFee;
     private double messFee;
@@ -43,6 +48,12 @@ public class Payment {
 
     public String getAcademicYear() { return academicYear; }
     public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
+
+    public int getMonth() { return month; }
+    public void setMonth(int month) { this.month = month; }
+
+    public int getYear() { return year; }
+    public void setYear(int year) { this.year = year; }
 
     public double getRoomFee() { return roomFee; }
     public void setRoomFee(double roomFee) { this.roomFee = roomFee; }

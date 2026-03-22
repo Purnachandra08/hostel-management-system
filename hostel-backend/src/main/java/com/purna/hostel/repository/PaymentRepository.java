@@ -8,33 +8,17 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    // =========================
-    // BASIC
-    // =========================
     List<Payment> findByUserId(Long userId);
 
-    List<Payment> findByUserIdAndPaymentStatus(Long userId, String status);
+    List<Payment> findByUserIdOrderByPaymentDateDesc(Long userId);
 
-    // =========================
-    // 🎯 ACADEMIC YEAR LOGIC
-    // =========================
+    // 🔥 MONTHLY CHECK
+    Optional<Payment> findByUserIdAndMonthAndYear(Long userId, int month, int year);
 
-    // ✅ Check if already paid for a year
-    Optional<Payment> findByUserIdAndAcademicYear(Long userId, String academicYear);
+    boolean existsByUserIdAndMonthAndYear(Long userId, int month, int year);
 
-    // ✅ Strict check (PAID only)
-    boolean existsByUserIdAndAcademicYearAndPaymentStatusIgnoreCase(
-            Long userId,
-            String academicYear,
-            String status
-    );
-
-    // ✅ Get all payments by year (admin)
-    List<Payment> findByAcademicYear(String academicYear);
-
-    // =========================
-    // 🔥 ADMIN STATS
-    // =========================
+    // ADMIN
+    List<Payment> findByYear(int year);
 
     long countByPaymentStatusIgnoreCase(String status);
 }

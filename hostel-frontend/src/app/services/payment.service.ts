@@ -1,21 +1,33 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-// ✅ Define a type for Fee Details
+// ==============================
+// ✅ Fee Details (Monthly)
+// ==============================
 export interface FeeDetails {
   roomFee: number;
   messFee: number;
   totalFee: number;
   paymentStatus: 'PAID' | 'PENDING';
+  paymentDate?: string;
+  month: number;
+  year: number;
 }
 
+// ==============================
+// ✅ Payment History (Monthly)
+// ==============================
 export interface PaymentHistory {
   id: number;
-  amount: number;
-  date: string;
-  status: 'PAID' | 'PENDING';
+  roomFee: number;
+  messFee: number;
+  totalFee: number;
+  paymentStatus: 'PAID' | 'PENDING';
+  paymentDate?: string;
+  month: number;
+  year: number;
 }
 
 @Injectable({
@@ -27,56 +39,29 @@ export class PaymentService {
 
   constructor(private http: HttpClient) {}
 
-  // ==============================
-  // Get Fee Details for a Student
-  // ==============================
+  // ✅ Student Fee
   getFeeDetails(userId: number): Observable<FeeDetails | null> {
-    return this.http.get<FeeDetails>(`${this.baseUrl}/fee/${userId}`)
-      .pipe(
-        catchError(err => {
-          console.error('Error fetching fee details', err);
-          // Return null if no booking exists or 400 error occurs
-          return throwError(() => new Error(err?.error?.message || 'No fee details found'));
-        })
-      );
+    return this.http.get<FeeDetails>(`${this.baseUrl}/fee/${userId}`).pipe(
+      catchError(() => of(null))
+    );
   }
 
-  // ==============================
-  // Pay Fee for a Student
-  // ==============================
+  // ✅ Pay Fee
   payFee(userId: number): Observable<FeeDetails> {
-    return this.http.post<FeeDetails>(`${this.baseUrl}/pay/${userId}`, {})
-      .pipe(
-        catchError(err => {
-          console.error('Error paying fee', err);
-          return throwError(() => new Error(err?.error?.message || 'Payment failed'));
-        })
-      );
+    return this.http.post<FeeDetails>(`${this.baseUrl}/pay/${userId}`, {});
   }
 
-  // ==============================
-  // Get Payment History
-  // ==============================
+  // ✅ Student History
   getPaymentHistory(userId: number): Observable<PaymentHistory[]> {
-    return this.http.get<PaymentHistory[]>(`${this.baseUrl}/history/${userId}`)
-      .pipe(
-        catchError(err => {
-          console.error('Error fetching payment history', err);
-          return throwError(() => new Error('Failed to fetch payment history'));
-        })
-      );
+    return this.http.get<PaymentHistory[]>(`${this.baseUrl}/history/${userId}`).pipe(
+      catchError(() => of([]))
+    );
   }
 
-  // ==============================
-  // Get All Payments (Admin)
-  // ==============================
+  // ✅ ADMIN: Get All Payments  🔥 (FIXED)
   getAllPayments(): Observable<PaymentHistory[]> {
-    return this.http.get<PaymentHistory[]>(`${this.baseUrl}/all`)
-      .pipe(
-        catchError(err => {
-          console.error('Error fetching all payments', err);
-          return throwError(() => new Error('Failed to fetch all payments'));
-        })
-      );
+    return this.http.get<PaymentHistory[]>(`${this.baseUrl}/all`).pipe(
+      catchError(() => of([]))
+    );
   }
 }

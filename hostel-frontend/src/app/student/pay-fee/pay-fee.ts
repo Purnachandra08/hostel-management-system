@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentService, FeeDetails } from '../../services/payment.service';
+import { PaymentService, FeeDetails, PaymentHistory } from '../../services/payment.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -12,11 +12,13 @@ import { AuthService } from '../../services/auth.service';
 })
 export class PayFeeComponent implements OnInit {
 
-  fee: FeeDetails | null = null; // ✅ typed fee
+  fee: FeeDetails | null = null;
   loading = false;
   paying = false;
-  message: string = ''; // ✅ declare message for error or info
-  userId!: number; // set from AuthService
+  message: string = '';
+  userId!: number;
+
+  paymentHistory: PaymentHistory[] = [];
 
   constructor(
     private service: PaymentService,
@@ -25,60 +27,56 @@ export class PayFeeComponent implements OnInit {
 
   ngOnInit() {
     const user = this.authService.getUser();
-    if (!user) {
-      alert('User not logged in.');
-      return;
-    }
+    if (!user) return;
+
     this.userId = user.id;
+
     this.getFee();
+    this.loadHistory();
   }
 
-  // =========================
-  // Get Fee Details
-  // =========================
+  // ✅ Month Name Converter
+  getMonthName(month: number): string {
+    return new Date(0, month - 1).toLocaleString('en', { month: 'long' });
+  }
+
   getFee() {
     this.loading = true;
-    this.message = '';
 
     this.service.getFeeDetails(this.userId).subscribe({
       next: (res) => {
         this.fee = res;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error fetching fee:', err);
-
-        // Friendly message for no booking or 400 error
-        if (err.status === 400 || err.message.includes('No fee details')) {
-          this.fee = null;
-          this.message = 'No fee details available. Please book a room first.';
-        } else {
-          this.message = 'Failed to load fee details. Try again later.';
-        }
-
+      error: () => {
+        this.message = 'No fee available';
         this.loading = false;
       }
     });
   }
 
-  // =========================
-  // Pay Fee
-  // =========================
   payNow() {
     if (!this.fee || this.fee.paymentStatus === 'PAID') return;
 
     this.paying = true;
+
     this.service.payFee(this.userId).subscribe({
-      next: (res) => {
-        this.fee!.paymentStatus = 'PAID';
-        this.paying = false;
+      next: () => {
         alert('Payment Successful!');
-      },
-      error: (err) => {
-        console.error('Payment error:', err);
         this.paying = false;
-        alert('Payment Failed. Try again!');
+        this.getFee();
+        this.loadHistory();
+      },
+      error: () => {
+        this.paying = false;
+        alert('Payment Failed');
       }
+    });
+  }
+
+  loadHistory() {
+    this.service.getPaymentHistory(this.userId).subscribe(res => {
+      this.paymentHistory = res;
     });
   }
 }
