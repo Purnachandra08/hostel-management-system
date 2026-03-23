@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BaseChartDirective } from 'ng2-charts';
@@ -13,15 +13,15 @@ Chart.register(...registerables);
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']
 })
-
 export class AdminDashboard implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  // ✅ FIX: Get ALL charts (not just one)
+  @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
   // =============================
-  // 📊 Bar Chart
+  // 📊 BAR CHART
   // =============================
   public barChartType: ChartType = 'bar';
 
@@ -37,7 +37,7 @@ export class AdminDashboard implements OnInit {
   };
 
   // =============================
-  // 🥧 Pie Chart
+  // 🥧 PIE CHART
   // =============================
   public pieChartType: ChartType = 'pie';
 
@@ -52,7 +52,7 @@ export class AdminDashboard implements OnInit {
   };
 
   // =============================
-  // 🍩 Doughnut Chart
+  // 🍩 DOUGHNUT CHART
   // =============================
   public doughnutChartType: ChartType = 'doughnut';
 
@@ -67,49 +67,77 @@ export class AdminDashboard implements OnInit {
   };
 
   // =============================
-  // Load API Data
+  // 🚀 INIT
   // =============================
   ngOnInit(): void {
     this.loadAnalytics();
   }
 
-  loadAnalytics() {
+  // =============================
+  // 📡 LOAD ANALYTICS DATA
+  // =============================
+  loadAnalytics(): void {
 
     this.http.get<any>('http://localhost:8080/api/admin/analytics')
       .subscribe({
 
         next: (data) => {
 
-          // BAR CHART
-          this.barChartData.datasets[0].data = [
-            data.students,
-            data.rooms,
-            data.wardens
-          ];
+          // ✅ BAR CHART DATA
+          this.barChartData = {
+            labels: ['Students', 'Rooms', 'Wardens'],
+            datasets: [
+              {
+                label: 'System Overview',
+                data: [
+                  data.students || 0,
+                  data.rooms || 0,
+                  data.wardens || 0
+                ],
+                backgroundColor: ['#4CAF50', '#2196F3', '#FF9800']
+              }
+            ]
+          };
 
-          // PIE CHART
-          this.pieChartData.datasets[0].data = [
-            data.occupiedRooms,
-            data.availableRooms
-          ];
+          // ✅ PIE CHART DATA
+          this.pieChartData = {
+            labels: ['Occupied Rooms', 'Available Rooms'],
+            datasets: [
+              {
+                data: [
+                  data.occupiedRooms || 0,
+                  data.availableRooms || 0
+                ],
+                backgroundColor: ['#f44336', '#4CAF50']
+              }
+            ]
+          };
 
-          // DOUGHNUT CHART
-          this.doughnutChartData.datasets[0].data = [
-            data.pendingComplaints,
-            data.resolvedComplaints
-          ];
+          // ✅ DOUGHNUT CHART DATA
+          this.doughnutChartData = {
+            labels: ['Pending', 'Resolved'],
+            datasets: [
+              {
+                data: [
+                  data.pendingComplaints || 0,
+                  data.resolvedComplaints || 0
+                ],
+                backgroundColor: ['#FFC107', '#4CAF50']
+              }
+            ]
+          };
 
-          // Force chart refresh
-          this.chart?.update();
-
+          // ✅ FIX: Update ALL charts safely
+          setTimeout(() => {
+            this.charts?.forEach(chart => chart.update());
+          }, 100);
         },
 
         error: (err) => {
-          console.error("Analytics API Error:", err);
+          console.error('❌ Analytics API Error:', err);
         }
 
       });
-
   }
 
 }
