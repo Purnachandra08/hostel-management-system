@@ -11,25 +11,26 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔗 USER RELATION
+    // 🔗 USER
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // 🔗 ROOM RELATION
+    // 🔗 ROOM
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    // 🎯 ACADEMIC YEAR (IMPORTANT)
-    @Column(name = "academic_year", nullable = false)
+    // 🎯 ACADEMIC YEAR
+    @Column(nullable = false)
     private String academicYear;
 
-    // ACTIVE / CANCELLED
+    // 🔥 STATUS FLOW
+    // PENDING → APPROVED → CANCELLED
     @Column(nullable = false)
-    private String status = "ACTIVE";
+    private String status = "PENDING";
 
-    // TRUE = ACTIVE BOOKING
+    // ACTIVE BOOKING FLAG
     @Column(name = "is_active")
     private boolean isActive = true;
 

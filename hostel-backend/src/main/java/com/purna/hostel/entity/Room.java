@@ -24,18 +24,20 @@ public class Room {
     @Column(nullable = false)
     private int capacity;
 
+    // 🔥 VERY IMPORTANT
+    @Column(nullable = false)
+    private int occupiedCount = 0;
+
     @Column(name = "price_per_month", nullable = false)
     private double pricePerMonth;
 
-    // ❌ REMOVE OCCUPIED LOGIC (NOT NEEDED)
     @Column(nullable = false)
-    private String status = "AVAILABLE";
+    private String status = "AVAILABLE"; // AVAILABLE / FULL
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // 🔥 BOOKINGS IN ROOM
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Booking> bookings = new HashSet<>();
 
@@ -63,6 +65,9 @@ public class Room {
     public int getCapacity() { return capacity; }
     public void setCapacity(int capacity) { this.capacity = capacity; }
 
+    public int getOccupiedCount() { return occupiedCount; }
+    public void setOccupiedCount(int occupiedCount) { this.occupiedCount = occupiedCount; }
+
     public double getPricePerMonth() { return pricePerMonth; }
     public void setPricePerMonth(double pricePerMonth) { this.pricePerMonth = pricePerMonth; }
 
@@ -72,5 +77,4 @@ public class Room {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public Set<Booking> getBookings() { return bookings; }
-    public void setBookings(Set<Booking> bookings) { this.bookings = bookings; }
 }

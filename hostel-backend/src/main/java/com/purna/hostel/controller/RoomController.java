@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map; // ✅ ADD THIS IMPORT
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -19,7 +19,7 @@ public class RoomController {
     private RoomService roomService;
 
     // =========================
-    // ✅ GET ALL ROOMS
+    // 📋 GET ALL ROOMS
     // =========================
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms() {
@@ -27,7 +27,7 @@ public class RoomController {
     }
 
     // =========================
-    // ✅ GET AVAILABLE ROOMS
+    // 🟢 AVAILABLE ROOMS
     // =========================
     @GetMapping("/available")
     public ResponseEntity<List<Room>> getAvailableRooms() {
@@ -35,21 +35,33 @@ public class RoomController {
     }
 
     // =========================
-    // ✅ ADD ROOM
+    // ➕ CREATE ROOM
     // =========================
     @PostMapping
-    public ResponseEntity<?> addRoom(@RequestBody Room room) {
+    public ResponseEntity<?> createRoom(@RequestBody Room room) {
         try {
-            Room savedRoom = roomService.saveRoom(room);
-            return ResponseEntity.ok(savedRoom);
+            return ResponseEntity.ok(roomService.createRoom(room));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Error adding room: " + e.getMessage()));
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 
     // =========================
-    // ✅ DELETE ROOM
+    // ✏️ UPDATE ROOM
+    // =========================
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateRoom(@PathVariable Long id, @RequestBody Room room) {
+        try {
+            return ResponseEntity.ok(roomService.updateRoom(id, room));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // =========================
+    // ❌ DELETE ROOM
     // =========================
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
@@ -58,7 +70,7 @@ public class RoomController {
             return ResponseEntity.ok(Map.of("message", "Room deleted successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(Map.of("message", "Error deleting room: " + e.getMessage()));
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 }

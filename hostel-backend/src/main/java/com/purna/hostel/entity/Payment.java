@@ -4,35 +4,26 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "payments",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "month", "year"}))
+@Table(name = "payments")
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🔗 RELATION
-    @ManyToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
-
     private Long userId;
 
-    // 🎯 ACADEMIC YEAR
-    private String academicYear;
+    private String type; // ROOM / MESS
 
-    // ✅ NEW (MONTHLY SYSTEM)
-    private int month;   // 1–12
-    private int year;    // 2026
+    private Long referenceId; // bookingId OR messFeeId
 
-    private double roomFee;
-    private double messFee;
-    private double totalFee;
+    private double amount;
 
-    private String paymentStatus; // PAID / PENDING
+    private String status = "SUCCESS"; // SUCCESS / FAILED
 
-    private LocalDateTime paymentDate;
+    private String transactionId;
+
+    private LocalDateTime paymentDate = LocalDateTime.now();
 
     // ======================
     // GETTERS & SETTERS
@@ -40,33 +31,23 @@ public class Payment {
 
     public Long getId() { return id; }
 
-    public Booking getBooking() { return booking; }
-    public void setBooking(Booking booking) { this.booking = booking; }
-
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public String getAcademicYear() { return academicYear; }
-    public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public int getMonth() { return month; }
-    public void setMonth(int month) { this.month = month; }
+    public Long getReferenceId() { return referenceId; }
+    public void setReferenceId(Long referenceId) { this.referenceId = referenceId; }
 
-    public int getYear() { return year; }
-    public void setYear(int year) { this.year = year; }
+    public double getAmount() { return amount; }
+    public void setAmount(double amount) { this.amount = amount; }
 
-    public double getRoomFee() { return roomFee; }
-    public void setRoomFee(double roomFee) { this.roomFee = roomFee; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public double getMessFee() { return messFee; }
-    public void setMessFee(double messFee) { this.messFee = messFee; }
-
-    public double getTotalFee() { return totalFee; }
-    public void setTotalFee(double totalFee) { this.totalFee = totalFee; }
-
-    public String getPaymentStatus() { return paymentStatus; }
-    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+    public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 
     public LocalDateTime getPaymentDate() { return paymentDate; }
-    public void setPaymentDate(LocalDateTime paymentDate) { this.paymentDate = paymentDate; }
 }

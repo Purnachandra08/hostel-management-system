@@ -1,10 +1,13 @@
 package com.purna.hostel.controller;
 
-import com.purna.hostel.entity.MessFee;
+import com.purna.hostel.entity.Payment;
 import com.purna.hostel.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -15,10 +18,10 @@ public class AdminController {
     private PaymentService paymentService;
 
     // =========================
-    // ✅ UPDATE MESS FEE
+    // 📊 GET ALL PAYMENTS
     // =========================
-    @PostMapping("/mess-fee")
-    public MessFee updateMessFee(@RequestParam double amount) {
-        return paymentService.updateMessFee(amount);
+    @GetMapping("/payments")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        return ResponseEntity.ok(paymentService.getAllPayments());
     }
 }

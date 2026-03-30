@@ -6,6 +6,7 @@ import com.purna.hostel.entity.User;
 import com.purna.hostel.repository.BookingRepository;
 import com.purna.hostel.repository.RoomRepository;
 import com.purna.hostel.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +25,14 @@ public class BookingService {
     private RoomRepository roomRepository;
 
     // =========================
-    // 🔥 Get current academic year (make dynamic later if needed)
+    // CURRENT YEAR
     // =========================
     private String getCurrentAcademicYear() {
         return "2025-2026";
     }
 
     // =========================
-    // ✅ CREATE BOOKING (ACADEMIC YEAR BASED, ROOM CAPACITY)
+    // CREATE BOOKING (PENDING)
     // =========================
     public Booking createBooking(Long userId, Long roomId) {
 
@@ -43,71 +44,104 @@ public class BookingService {
 
         String year = getCurrentAcademicYear();
 
-        // 🔥 Prevent duplicate booking for same academic year
-        boolean alreadyBooked = bookingRepository.existsByUser_IdAndAcademicYearAndIsActiveTrue(userId, year);
-        if (alreadyBooked) {
-            throw new RuntimeException("Already booked for this academic year");
+        // ❌ One booking per year
+        if (bookingRepository.existsByUser_IdAndAcademicYearAndIsActiveTrue(userId, year)) {
+            throw new RuntimeException("Already booked for this year");
         }
 
-        // 🔥 Check current room bookings for the year
-        long bookedCount = bookingRepository.countByRoom_IdAndAcademicYearAndIsActiveTrue(roomId, year);
-        if (bookedCount >= room.getCapacity()) {
-            throw new RuntimeException("Room is full for this academic year");
+        // ❌ Check room capacity
+        if (room.getOccupiedCount() >= room.getCapacity()) {
+            throw new RuntimeException("Room is full");
         }
 
-        // ✅ Create new booking
+        // ✅ Create booking (PENDING)
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setRoom(room);
-        booking.setStatus("ACTIVE");
         booking.setAcademicYear(year);
+        booking.setStatus("PENDING");
         booking.setActive(true);
-
-        // 🔥 Update room status if full
-        if (bookedCount + 1 >= room.getCapacity()) {
-            room.setStatus("FULL");
-            roomRepository.save(room);
-        }
 
         return bookingRepository.save(booking);
     }
 
     // =========================
-    // ✅ GET ALL BOOKINGS (ADMIN)
+    // APPROVE BOOKING (AFTER PAYMENT)
+    // =========================
+    public Booking approveBooking(Long bookingId) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if ("APPROVED".equalsIgnoreCase(booking.getStatus())) {
+            throw new RuntimeException("Already approved");
+        }
+
+        Room room = booking.getRoom();
+
+        // ❌ Check again before approving
+        if (room.getOccupiedCount() >= room.getCapacity()) {
+            throw new RuntimeException("Room full");
+        }
+
+        // ✅ Update booking
+        booking.setStatus("APPROVED");
+
+        // ✅ Update room
+        room.setOccupiedCount(room.getOccupiedCount() + 1);
+
+        if (room.getOccupiedCount() >= room.getCapacity()) {
+            room.setStatus("FULL");
+        }
+
+        roomRepository.save(room);
+
+        return bookingRepository.save(booking);
+    }
+
+    // =========================
+    // GET STUDENT BOOKING
+    // =========================
+    public Booking getStudentBooking(Long userId) {
+        return bookingRepository
+                .findByUser_IdAndAcademicYearAndIsActiveTrue(userId, getCurrentAcademicYear())
+                .orElseThrow(() -> new RuntimeException("No booking found"));
+    }
+
+    // =========================
+    // ADMIN VIEW
     // =========================
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
     // =========================
-    // ✅ GET STUDENT BOOKING (CURRENT YEAR)
+    // CANCEL BOOKING
     // =========================
-    public Booking getStudentBooking(Long userId) {
-        return bookingRepository
-                .findByUser_IdAndAcademicYearAndIsActiveTrue(userId, getCurrentAcademicYear())
-                .orElseThrow(() -> new RuntimeException("No booking found for this year"));
-    }
+    public void cancelBooking(Long bookingId) {
 
-    // =========================
-    // ✅ CANCEL BOOKING
-    // =========================
-    public void cancelBooking(Long id) {
-        Booking booking = bookingRepository.findById(id)
+        Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if ("CANCELLED".equalsIgnoreCase(booking.getStatus())) {
+            throw new RuntimeException("Already cancelled");
+        }
 
         booking.setStatus("CANCELLED");
         booking.setActive(false);
 
         Room room = booking.getRoom();
-        if (room != null) {
-            // Check if room still has active bookings for this year
-            long activeBookings = bookingRepository.countByRoom_IdAndAcademicYearAndIsActiveTrue(room.getId(), getCurrentAcademicYear());
-            if (activeBookings < room.getCapacity()) {
-                room.setStatus("AVAILABLE");
-                roomRepository.save(room);
-            }
+
+        // 🔥 Reduce occupied count only if approved
+        if ("APPROVED".equalsIgnoreCase(booking.getStatus())) {
+            room.setOccupiedCount(Math.max(0, room.getOccupiedCount() - 1));
         }
 
+        if (room.getOccupiedCount() < room.getCapacity()) {
+            room.setStatus("AVAILABLE");
+        }
+
+        roomRepository.save(room);
         bookingRepository.save(booking);
     }
 }

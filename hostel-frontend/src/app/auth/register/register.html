@@ -19,8 +19,13 @@
           name="fullName"
           placeholder="Full Name"
           [(ngModel)]="model.fullName"
+          #fullName="ngModel"
           required
+          pattern="^[A-Za-z ]{3,}$"
         />
+        <small class="error" *ngIf="fullName.invalid && fullName.touched">
+          Enter valid name (only alphabets, min 3 letters)
+        </small>
       </div>
 
       <!-- Username -->
@@ -30,8 +35,13 @@
           name="username"
           placeholder="Username"
           [(ngModel)]="model.username"
+          #username="ngModel"
           required
+          minlength="3"
         />
+        <small class="error" *ngIf="username.invalid && username.touched">
+          Username must be at least 3 characters
+        </small>
       </div>
 
       <!-- Email -->
@@ -41,8 +51,13 @@
           name="email"
           placeholder="Email Address"
           [(ngModel)]="model.email"
+          #email="ngModel"
           required
+          email
         />
+        <small class="error" *ngIf="email.invalid && email.touched">
+          Enter valid email
+        </small>
       </div>
 
       <!-- Phone -->
@@ -52,8 +67,15 @@
           name="phone"
           placeholder="Phone Number"
           [(ngModel)]="model.phone"
+          #phone="ngModel"
           required
+          pattern="^[0-9]{10}$"
+          maxlength="10"
+          (keypress)="allowOnlyNumbers($event)"
         />
+        <small class="error" *ngIf="phone.invalid && phone.touched">
+          Enter valid 10-digit phone number
+        </small>
       </div>
 
       <!-- Password -->
@@ -63,8 +85,13 @@
           name="password"
           placeholder="Password"
           [(ngModel)]="model.password"
+          #password="ngModel"
           required
+          pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
         />
+        <small class="error" *ngIf="password.invalid && password.touched">
+          Min 6 chars, include letter & number
+        </small>
       </div>
 
       <!-- Register Button -->

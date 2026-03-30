@@ -1,8 +1,9 @@
 package com.purna.hostel.service;
 
 import com.purna.hostel.entity.Booking;
+import com.purna.hostel.entity.MessFee;
 import com.purna.hostel.repository.BookingRepository;
-import com.purna.hostel.repository.PaymentRepository;
+import com.purna.hostel.repository.MessFeeRepository;
 import com.purna.hostel.service.email.EmailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,34 +20,46 @@ public class PaymentReminderScheduler {
     private BookingRepository bookingRepository;
 
     @Autowired
-    private PaymentRepository paymentRepository;
+    private MessFeeRepository messFeeRepository;
 
     @Autowired
     private EmailService emailService;
 
-    // 🔔 Runs every day at 10 AM
+    // 🔔 Runs daily at 10 AM
     @Scheduled(cron = "0 0 10 * * ?")
     public void sendReminders() {
 
-        int month = LocalDateTime.now().getMonthValue();
-        int year = LocalDateTime.now().getYear();
+        int currentMonth = LocalDateTime.now().getMonthValue();
+        int currentYear = LocalDateTime.now().getYear();
         String monthName = LocalDateTime.now().getMonth().toString();
 
+        // 🔥 Only active bookings
         List<Booking> bookings = bookingRepository.findAll();
 
         for (Booking booking : bookings) {
 
+            if (!booking.isActive() || !"APPROVED".equalsIgnoreCase(booking.getStatus())) {
+                continue;
+            }
+
             Long userId = booking.getUser().getId();
 
-            boolean paid = paymentRepository
-                    .existsByUserIdAndMonthAndYear(userId, month, year);
+            // 🔥 Check mess fee for current month
+            MessFee mess = messFeeRepository
+                    .findByUserIdAndMonthAndYear(userId, currentMonth, currentYear)
+                    .orElse(null);
 
-            if (!paid) {
-                emailService.sendPaymentReminderEmail(
-                        booking.getUser().getEmail(),
-                        booking.getUser().getFullName(),
-                        monthName
-                );
+            if (mess != null && "UNPAID".equalsIgnoreCase(mess.getStatus())) {
+
+                try {
+                    emailService.sendPaymentReminderEmail(
+                            booking.getUser().getEmail(),
+                            booking.getUser().getFullName(),
+                            monthName
+                    );
+                } catch (Exception e) {
+                    System.out.println("Reminder email failed: " + e.getMessage());
+                }
             }
         }
     }

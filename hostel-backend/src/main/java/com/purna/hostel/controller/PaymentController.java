@@ -19,31 +19,14 @@ public class PaymentController {
     private PaymentService paymentService;
 
     // =========================
-    // ✅ GET FEE DETAILS
+    // 🏠 PAY ROOM FEE
     // =========================
-    @GetMapping("/fee/{userId}")
-    public ResponseEntity<?> getFee(@PathVariable Long userId) {
+    @PostMapping("/room/{userId}")
+    public ResponseEntity<?> payRoomFee(@PathVariable Long userId) {
         try {
-            Payment payment = paymentService.calculateFee(userId);
+            Payment payment = paymentService.payRoomFee(userId);
             return ResponseEntity.ok(payment);
-        } catch (Exception e) {
-            if (e.getMessage().equals("No active booking found for this year")) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("message", "Please book a room first"));
-            }
-            return ResponseEntity.badRequest()
-                    .body(Map.of("message", e.getMessage()));
-        }
-    }
 
-    // =========================
-    // ✅ PAY FEE
-    // =========================
-    @PostMapping("/pay/{userId}")
-    public ResponseEntity<?> payFee(@PathVariable Long userId) {
-        try {
-            Payment payment = paymentService.makePayment(userId);
-            return ResponseEntity.ok(payment);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", e.getMessage()));
@@ -51,20 +34,33 @@ public class PaymentController {
     }
 
     // =========================
-    // ✅ STUDENT PAYMENT HISTORY
+    // 🍽️ PAY MESS FEE
+    // =========================
+    @PostMapping("/mess/{messId}")
+    public ResponseEntity<?> payMessFee(@PathVariable Long messId) {
+        try {
+            Payment payment = paymentService.payMessFee(messId);
+            return ResponseEntity.ok(payment);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // =========================
+    // 📜 USER PAYMENT HISTORY
     // =========================
     @GetMapping("/history/{userId}")
-    public ResponseEntity<List<Payment>> getStudentPayments(@PathVariable Long userId) {
-        List<Payment> payments = paymentService.getStudentPayments(userId);
-        return ResponseEntity.ok(payments);
+    public ResponseEntity<List<Payment>> getUserPayments(@PathVariable Long userId) {
+        return ResponseEntity.ok(paymentService.getUserPayments(userId));
     }
 
     // =========================
-    // ✅ ADMIN: ALL PAYMENTS
+    // 📊 ADMIN: ALL PAYMENTS
     // =========================
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Payment>> getAllPayments() {
-        List<Payment> payments = paymentService.getAllPayments();
-        return ResponseEntity.ok(payments);
+        return ResponseEntity.ok(paymentService.getAllPayments());
     }
 }

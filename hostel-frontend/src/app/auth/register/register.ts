@@ -30,19 +30,38 @@ export class Register {
     private router: Router
   ) {}
 
+  // ✅ Allow only numbers in phone field
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const charCode = event.which ? event.which : event.keyCode;
+
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
+  }
+
   onSubmit(): void {
     this.error = '';
     this.message = '';
+
+    // ✅ Extra safety validation
+    if (!/^[A-Za-z ]{3,}$/.test(this.model.fullName)) {
+      this.error = 'Invalid full name';
+      return;
+    }
+
+    if (!/^[0-9]{10}$/.test(this.model.phone)) {
+      this.error = 'Invalid phone number';
+      return;
+    }
+
+    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(this.model.password)) {
+      this.error = 'Password must contain letters and numbers';
+      return;
+    }
+
     this.loading = true;
 
-    // ✅ EXACTLY what backend expects
-    const payload = {
-      fullName: this.model.fullName,
-      username: this.model.username,
-      email: this.model.email,
-      phone: this.model.phone,
-      password: this.model.password
-    };
+    const payload = { ...this.model };
 
     console.log('📤 Student Register Payload:', payload);
 

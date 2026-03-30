@@ -25,25 +25,30 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long countByStatusIgnoreCase(String status);
 
     // =========================
+    // 🔥 ACTIVE BOOKING (IMPORTANT FIX)
+    // =========================
+
+    // ✅ SINGLE ACTIVE BOOKING (USE THIS IN SERVICE)
+    Optional<Booking> findByUser_IdAndIsActiveTrue(Long userId);
+
+    // ✅ LIST (optional for admin/debug)
+    List<Booking> findByUser_IdAndIsActiveTrueOrderByCreatedAtDesc(Long userId);
+
+    // =========================
     // 🎯 ACADEMIC YEAR LOGIC
     // =========================
 
-    // ✅ Check if already booked (STRICT RULE)
     boolean existsByUser_IdAndAcademicYearAndIsActiveTrue(Long userId, String academicYear);
 
-    // ✅ Get active booking for a student
     Optional<Booking> findByUser_IdAndAcademicYearAndIsActiveTrue(Long userId, String academicYear);
 
-    // ✅ Get all bookings of a year
     List<Booking> findByAcademicYear(String academicYear);
 
     // =========================
     // 🔥 ROOM CAPACITY LOGIC
     // =========================
 
-    // ✅ Count students in a room for a year
     long countByRoom_IdAndAcademicYearAndIsActiveTrue(Long roomId, String academicYear);
 
-    // ✅ Get all active bookings of a room (for admin view)
     List<Booking> findByRoom_IdAndIsActiveTrue(Long roomId);
 }

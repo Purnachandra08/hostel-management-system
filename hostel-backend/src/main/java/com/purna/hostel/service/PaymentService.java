@@ -1,11 +1,7 @@
 package com.purna.hostel.service;
 
-import com.purna.hostel.entity.Booking;
-import com.purna.hostel.entity.MessFee;
-import com.purna.hostel.entity.Payment;
-import com.purna.hostel.repository.BookingRepository;
-import com.purna.hostel.repository.MessFeeRepository;
-import com.purna.hostel.repository.PaymentRepository;
+import com.purna.hostel.entity.*;
+import com.purna.hostel.repository.*;
 import com.purna.hostel.service.email.EmailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PaymentService {
-
-    @Autowired
-    private EmailService emailService;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -29,135 +23,107 @@ public class PaymentService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    // =========================
-    // 🔥 CURRENT DATE
-    // =========================
-    private int getCurrentMonth() {
-        return LocalDateTime.now().getMonthValue();
-    }
-
-    private int getCurrentYear() {
-        return LocalDateTime.now().getYear();
-    }
-
-    private String getCurrentAcademicYear() {
-        return "2025-2026";
-    }
+    @Autowired
+    private EmailService emailService;
 
     // =========================
     // 🔥 GET ACTIVE BOOKING
     // =========================
     private Booking getActiveBooking(Long userId) {
-        return bookingRepository
-                .findByUser_IdAndAcademicYearAndIsActiveTrue(userId, getCurrentAcademicYear())
-                .orElseThrow(() -> new RuntimeException("No active booking found for this year"));
+        return bookingRepository.findByUser_IdAndIsActiveTrue(userId)
+                .orElseThrow(() -> new RuntimeException("No active booking found"));
     }
 
     // =========================
-    // 🔥 GET MESS FEE
+    // 🏠 ROOM PAYMENT
     // =========================
-    private double getMessFee() {
-        List<MessFee> fees = messFeeRepository.findAll();
-        if (fees.isEmpty()) throw new RuntimeException("Mess fee not set");
-        return fees.get(0).getAmount();
-    }
-
-    // =========================
-    // ✅ CALCULATE FEE (MONTHLY)
-    // =========================
-    public Payment calculateFee(Long userId) {
-
-        int month = getCurrentMonth();
-        int year = getCurrentYear();
+    public Payment payRoomFee(Long userId) {
 
         Booking booking = getActiveBooking(userId);
 
-        double roomFee = booking.getRoom().getPricePerMonth();
-        double messFee = getMessFee();
-
-        Payment existing = paymentRepository
-                .findByUserIdAndMonthAndYear(userId, month, year)
-                .orElse(null);
-
-        Payment payment = new Payment();
-        payment.setBooking(booking);
-        payment.setUserId(userId);
-        payment.setAcademicYear(getCurrentAcademicYear());
-        payment.setMonth(month);
-        payment.setYear(year);
-        payment.setRoomFee(roomFee);
-        payment.setMessFee(messFee);
-        payment.setTotalFee(roomFee + messFee);
-
-        if (existing != null) {
-            payment.setPaymentStatus(existing.getPaymentStatus());
-            payment.setPaymentDate(existing.getPaymentDate());
-        } else {
-            payment.setPaymentStatus("PENDING");
+        if (!"PENDING".equalsIgnoreCase(booking.getStatus())) {
+            throw new RuntimeException("Booking already processed");
         }
-
-        return payment;
-    }
-
-    // =========================
-    // ✅ MAKE PAYMENT (MONTHLY + EMAIL)
-    // =========================
-    public Payment makePayment(Long userId) {
-
-        int month = getCurrentMonth();
-        int year = getCurrentYear();
 
         // ❌ Prevent duplicate payment
-        if (paymentRepository.existsByUserIdAndMonthAndYear(userId, month, year)) {
-            throw new RuntimeException("Already paid for this month");
+        if (paymentRepository.existsByReferenceId(booking.getId())) {
+            throw new RuntimeException("Room fee already paid");
         }
 
-        Booking booking = getActiveBooking(userId);
-
-        double roomFee = booking.getRoom().getPricePerMonth();
-        double messFee = getMessFee();
+        double amount = booking.getRoom().getPricePerMonth() * 12;
 
         Payment payment = new Payment();
-        payment.setBooking(booking);
         payment.setUserId(userId);
-        payment.setAcademicYear(getCurrentAcademicYear());
-        payment.setMonth(month);
-        payment.setYear(year);
-        payment.setRoomFee(roomFee);
-        payment.setMessFee(messFee);
-        payment.setTotalFee(roomFee + messFee);
-        payment.setPaymentStatus("PAID");
-        payment.setPaymentDate(LocalDateTime.now());
+        payment.setType("ROOM");
+        payment.setReferenceId(booking.getId());
+        payment.setAmount(amount);
+        payment.setStatus("SUCCESS");
+        payment.setTransactionId(UUID.randomUUID().toString());
 
-        // ✅ SAVE FIRST
-        Payment savedPayment = paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
 
-        // =========================
-        // 📧 SEND PAYMENT EMAIL
-        // =========================
-        try {
-            String email = booking.getUser().getEmail();
-            String name = booking.getUser().getFullName();
-            String monthName = LocalDateTime.now().getMonth().toString();
+        // ✅ APPROVE BOOKING
+        booking.setStatus("APPROVED");
 
-            emailService.sendPaymentSuccessEmail(
-                    email,
-                    name,
-                    monthName,
-                    savedPayment.getTotalFee()
-            );
-        } catch (Exception e) {
-            // ❗ Do not break payment if email fails
-            System.out.println("Email sending failed: " + e.getMessage());
+        Room room = booking.getRoom();
+        room.setOccupiedCount(room.getOccupiedCount() + 1);
+
+        if (room.getOccupiedCount() >= room.getCapacity()) {
+            room.setStatus("FULL");
         }
 
-        return savedPayment;
+        bookingRepository.save(booking);
+
+        // ✅ CREATE MESS FEES (12 months)
+        createYearlyMessFees(userId, booking.getAcademicYear(), 3000); // you can make dynamic
+
+        // 📧 EMAIL
+        try {
+            emailService.sendPaymentSuccessEmail(
+                    booking.getUser().getEmail(),
+                    booking.getUser().getFullName(),
+                    "Room Fee",
+                    amount
+            );
+        } catch (Exception e) {
+            System.out.println("Email failed: " + e.getMessage());
+        }
+
+        return saved;
     }
 
     // =========================
-    // ✅ HISTORY
+    // 🍽️ PAY MESS FEE
     // =========================
-    public List<Payment> getStudentPayments(Long userId) {
+    public Payment payMessFee(Long messFeeId) {
+
+        MessFee mess = messFeeRepository.findById(messFeeId)
+                .orElseThrow(() -> new RuntimeException("Mess fee not found"));
+
+        if ("PAID".equalsIgnoreCase(mess.getStatus())) {
+            throw new RuntimeException("Already paid");
+        }
+
+        Payment payment = new Payment();
+        payment.setUserId(mess.getUserId());
+        payment.setType("MESS");
+        payment.setReferenceId(mess.getId());
+        payment.setAmount(mess.getAmount());
+        payment.setStatus("SUCCESS");
+        payment.setTransactionId(UUID.randomUUID().toString());
+
+        Payment saved = paymentRepository.save(payment);
+
+        mess.setStatus("PAID");
+        messFeeRepository.save(mess);
+
+        return saved;
+    }
+
+    // =========================
+    // 📜 HISTORY
+    // =========================
+    public List<Payment> getUserPayments(Long userId) {
         return paymentRepository.findByUserIdOrderByPaymentDateDesc(userId);
     }
 
@@ -166,20 +132,26 @@ public class PaymentService {
     }
 
     // =========================
-    // ✅ UPDATE MESS FEE
+    // 🍽️ CREATE MESS (AUTO)
     // =========================
-    public MessFee updateMessFee(double amount) {
+    public void createYearlyMessFees(Long userId, String academicYear, double amount) {
 
-        List<MessFee> fees = messFeeRepository.findAll();
+        int year = LocalDateTime.now().getYear();
 
-        if (fees.isEmpty()) {
-            MessFee newFee = new MessFee();
-            newFee.setAmount(amount);
-            return messFeeRepository.save(newFee);
+        for (int i = 1; i <= 12; i++) {
+
+            if (!messFeeRepository.existsByUserIdAndMonthAndYear(userId, i, year)) {
+
+                MessFee mess = new MessFee();
+                mess.setUserId(userId);
+                mess.setAcademicYear(academicYear);
+                mess.setMonth(i);
+                mess.setYear(year);
+                mess.setAmount(amount);
+                mess.setStatus("UNPAID");
+
+                messFeeRepository.save(mess);
+            }
         }
-
-        MessFee fee = fees.get(0);
-        fee.setAmount(amount);
-        return messFeeRepository.save(fee);
     }
 }
