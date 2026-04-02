@@ -2,21 +2,55 @@
 
   <h2>💰 Admin Payment Management</h2>
 
-  <h3>Total Collected: ₹{{total}}</h3>
+  <!-- 💰 TOTAL -->
+  <div class="total-card">
+    <h3>Total Revenue</h3>
+    <p>₹{{ total }}</p>
+  </div>
 
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Total</th>
-      <th>Status</th>
-    </tr>
+  <!-- 📊 TABLE -->
+  <table *ngIf="payments.length > 0">
 
-    <tr *ngFor="let p of payments">
-      <td>{{p.id}}</td>
-      <td>₹{{p.totalFee}}</td>
-      <td>{{p.paymentStatus}}</td>
-    </tr>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let p of payments">
+
+        <td>{{ p.id }}</td>
+
+        <td>₹{{ p.amount }}</td>
+
+        <td>{{ p.type }}</td>
+
+        <td>
+          <span [ngClass]="{
+            'success': p.status === 'SUCCESS',
+            'failed': p.status === 'FAILED'
+          }">
+            {{ p.status }}
+          </span>
+        </td>
+
+        <td>
+          {{ p.paymentDate | date:'medium' }}
+        </td>
+
+      </tr>
+    </tbody>
 
   </table>
+
+  <!-- ❌ EMPTY -->
+  <div *ngIf="payments.length === 0" class="no-data">
+    No payments found
+  </div>
 
 </div>

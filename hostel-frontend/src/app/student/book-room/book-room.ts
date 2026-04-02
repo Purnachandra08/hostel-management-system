@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RoomService } from '../../services/room.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
@@ -8,20 +7,23 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-book-room',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './book-room.html',
   styleUrls: ['./book-room.css']
 })
 export class BookRoom implements OnInit {
 
   rooms: any[] = [];
-  selectedRoomId: number | null = null;
+  studentBooking: any = null;
+
   message: string = '';
+  error: string = '';
+  loading: boolean = false;
+
   currentYear: number = new Date().getFullYear();
-  studentBooking: any = null; // ✅ Store current student booking
 
   private bookingBaseUrl = 'http://localhost:8080/api/bookings';
-  private roomBaseUrl = 'http://localhost:8080/api/rooms';
+  private paymentBaseUrl = 'http://localhost:8080/api/payments';
 
   constructor(
     private roomService: RoomService,
@@ -31,83 +33,90 @@ export class BookRoom implements OnInit {
 
   ngOnInit(): void {
     this.loadAvailableRooms();
-    this.loadStudentBooking(); // ✅ Load current booking on page load
+    this.loadStudentBooking();
   }
 
-  // ================================
-  // Load Available Rooms
-  // ================================
+  // =========================
+  // LOAD ROOMS
+  // =========================
   loadAvailableRooms(): void {
     this.roomService.getAvailableRooms().subscribe({
-      next: (data) => {
-        this.rooms = data;
-      },
-      error: (err) => {
-        console.error('Error loading rooms:', err);
-        this.message = 'Failed to load available rooms.';
-      }
+      next: (data) => this.rooms = data,
+      error: () => this.error = 'Failed to load rooms'
     });
   }
 
-  // ================================
-  // Load Current Student Booking
-  // ================================
+  // =========================
+  // LOAD BOOKING
+  // =========================
   loadStudentBooking(): void {
     const user = this.authService.getUser();
     if (!user) return;
 
     this.http.get(`${this.bookingBaseUrl}/student/${user.id}`).subscribe({
-      next: (data) => {
-        this.studentBooking = data; // Store booking details
-      },
-      error: (err) => {
-        console.log('No active booking found or error fetching booking:', err);
-        this.studentBooking = null;
-      }
+      next: (data) => this.studentBooking = data,
+      error: () => this.studentBooking = null
     });
   }
 
-  // ================================
-  // Book Room
-  // ================================
-  bookRoom(): void {
-
-    if (!this.selectedRoomId) {
-      this.message = 'Please select a room.';
-      return;
-    }
+  // =========================
+  // BOOK ROOM
+  // =========================
+  bookRoom(roomId: number): void {
 
     const user = this.authService.getUser();
     if (!user) {
-      this.message = 'User not logged in. Please login again.';
+      this.error = 'Please login again';
       return;
     }
 
-    this.http.post(`${this.bookingBaseUrl}/${user.id}/${this.selectedRoomId}`, {}).subscribe({
-      next: (res: any) => {
-        this.message = 'Room booked successfully!';
-        this.selectedRoomId = null;
+    this.loading = true;
+    this.error = '';
+    this.message = '';
 
-        // Reload rooms and student booking
-        this.loadAvailableRooms();
-        this.loadStudentBooking();
-      },
-      error: (err) => {
-        console.error('Error booking room:', err);
-        if (err.error && err.error.message) {
-          this.message = err.error.message;
-        } else {
-          this.message = 'Failed to book room. Please try again.';
+    this.http.post(`${this.bookingBaseUrl}/${user.id}/${roomId}`, {})
+      .subscribe({
+        next: (res: any) => {
+          this.message = res.message || 'Booking created';
+          this.loadStudentBooking();
+          this.loadAvailableRooms();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = err?.error?.message || 'Booking failed';
+          this.loading = false;
         }
-      }
-    });
+      });
   }
 
-  // ================================
-  // Logout function
-  // ================================
+  // =========================
+  // PAY ROOM FEE
+  // =========================
+  payRoomFee(): void {
+
+    const user = this.authService.getUser();
+    if (!user) return;
+
+    this.loading = true;
+
+    this.http.post(`${this.paymentBaseUrl}/room/${user.id}`, {})
+      .subscribe({
+        next: () => {
+          this.message = 'Payment successful 🎉';
+          this.loadStudentBooking();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = err?.error?.message || 'Payment failed';
+          this.loading = false;
+        }
+      });
+  }
+
+  // =========================
+  // LOGOUT
+  // =========================
   logout(): void {
     this.authService.logout();
   }
-
 }

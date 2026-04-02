@@ -1,76 +1,118 @@
-<div class="navbar">
-  <h2>🏨 Hostel Management</h2>
-  <nav>
-    <a href="#" (click)="logout()">Logout</a>
-  </nav>
-</div>
+<!-- 🌿 Navbar -->
+<nav class="navbar">
+  <div class="nav-logo">🏨 Hostel Dashboard</div>
+  <button class="logout-btn" (click)="logout()">Logout</button>
+</nav>
 
-<div class="book-container">
-  <h2>Book Your Room</h2>
+<div class="container">
 
-  <div class="form-container">
-    <label>Select Room:</label>
-    <select [(ngModel)]="selectedRoomId">
-      <option value="" disabled>-- Select a Room --</option>
-      <option *ngFor="let room of rooms" [value]="room.id">
-        {{ room.roomNumber }} - {{ room.type }} - ₹{{ room.pricePerMonth }}
-      </option>
-    </select>
+  <h2>🏠 Room Booking</h2>
 
-    <button (click)="bookRoom()">Book Room</button>
-
-    <p class="message" *ngIf="message">{{ message }}</p>
+  <!-- 🌿 Messages -->
+  <div class="messages">
+    <p class="success" *ngIf="message">{{ message }}</p>
+    <p class="error" *ngIf="error">{{ error }}</p>
   </div>
 
-  <!-- Current Booking -->
-  <div class="current-booking card" *ngIf="studentBooking">
-    <h3>Current Booking Details</h3>
-    <table>
-      <tr>
-        <th>Booking ID</th>
-        <td>{{ studentBooking.id }}</td>
-      </tr>
-      <tr>
-        <th>Room Number</th>
-        <td>{{ studentBooking.room.roomNumber }}</td>
-      </tr>
-      <tr>
-        <th>Room Type</th>
-        <td>{{ studentBooking.room.type }}</td>
-      </tr>
-      <tr>
-        <th>Capacity</th>
-        <td>{{ studentBooking.room.capacity }}</td>
-      </tr>
-      <tr>
-        <th>Price/Month</th>
-        <td>₹{{ studentBooking.room.pricePerMonth }}</td>
-      </tr>
-      <tr>
-        <th>Status</th>
-        <td>{{ studentBooking.room.status }}</td>
-      </tr>
-      <tr>
-        <th>Academic Year</th>
-        <td>{{ studentBooking.academicYear }}</td>
-      </tr>
-      <!-- Optional: Fee info if available -->
-      <tr *ngIf="studentBooking.fee">
-        <th>Room Fee</th>
-        <td>₹{{ studentBooking.fee.roomFee }}</td>
-      </tr>
-      <tr *ngIf="studentBooking.fee">
-        <th>Mess Fee</th>
-        <td>₹{{ studentBooking.fee.messFee }}</td>
-      </tr>
-      <tr *ngIf="studentBooking.fee">
-        <th>Total Fee</th>
-        <td>₹{{ studentBooking.fee.totalFee }}</td>
-      </tr>
-    </table>
+  <!-- ============================= -->
+  <!-- ⏳ Loading -->
+  <!-- ============================= -->
+  <div *ngIf="loading" class="loading">
+    Processing... Please wait ⏳
   </div>
+
+  <!-- ============================= -->
+  <!-- 🏠 AVAILABLE ROOMS -->
+  <!-- ============================= -->
+  <div *ngIf="!studentBooking && !loading">
+
+    <h3>Select a Room</h3>
+
+    <div class="room-grid">
+
+      <div class="room-card" *ngFor="let room of rooms">
+
+        <h3>{{ room.roomNumber }}</h3>
+
+        <p><strong>Type:</strong> {{ room.type }}</p>
+        <p><strong>Capacity:</strong> {{ room.capacity }}</p>
+        <p><strong>Price:</strong> ₹{{ room.pricePerMonth }}/month</p>
+
+        <p>
+          <strong>Status:</strong>
+          <span class="available">
+            {{ room.status || 'AVAILABLE' }}
+          </span>
+        </p>
+
+        <!-- ✅ BOOK BUTTON -->
+        <button
+          (click)="bookRoom(room.id)"
+          [disabled]="loading"
+          class="book-btn"
+        >
+          {{ loading ? 'Booking...' : 'Book Room' }}
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ❌ No Rooms -->
+    <p *ngIf="rooms.length === 0" class="no-data">
+      No rooms available right now
+    </p>
+
+  </div>
+
+  <!-- ============================= -->
+  <!-- 📄 BOOKING DETAILS -->
+  <!-- ============================= -->
+  <div *ngIf="studentBooking && !loading" class="booking-card">
+
+    <h3>📄 Your Booking</h3>
+
+    <p><strong>Room:</strong> {{ studentBooking?.room?.roomNumber }}</p>
+    <p><strong>Type:</strong> {{ studentBooking?.room?.type }}</p>
+    <p><strong>Price:</strong> ₹{{ studentBooking?.room?.pricePerMonth }}</p>
+
+    <p>
+      <strong>Status:</strong>
+      <span
+        [ngClass]="{
+          'pending': studentBooking.status === 'PENDING',
+          'approved': studentBooking.status === 'APPROVED',
+          'cancelled': studentBooking.status === 'CANCELLED'
+        }"
+      >
+        {{ studentBooking.status }}
+      </span>
+    </p>
+
+    <!-- 🔥 PAY BUTTON -->
+    <button
+      *ngIf="studentBooking.status === 'PENDING'"
+      (click)="payRoomFee()"
+      class="pay-btn"
+    >
+      💰 Pay Room Fee
+    </button>
+
+    <!-- ✅ APPROVED -->
+    <p *ngIf="studentBooking.status === 'APPROVED'" class="approved-text">
+      ✅ Room Confirmed
+    </p>
+
+    <!-- ❌ CANCELLED -->
+    <p *ngIf="studentBooking.status === 'CANCELLED'" class="cancelled-text">
+      ❌ Booking Cancelled
+    </p>
+
+  </div>
+
 </div>
 
+<!-- 🌿 Footer -->
 <footer class="footer">
-  <p>© {{ currentYear }} Hostel Management | Designed with ❤️ by Purna</p>
+  © {{ currentYear }} Hostel Management System
 </footer>

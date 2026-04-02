@@ -4,30 +4,14 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 // ==============================
-// ✅ Fee Details (Monthly)
+// ✅ Payment Model (MATCH BACKEND)
 // ==============================
-export interface FeeDetails {
-  roomFee: number;
-  messFee: number;
-  totalFee: number;
-  paymentStatus: 'PAID' | 'PENDING';
-  paymentDate?: string;
-  month: number;
-  year: number;
-}
-
-// ==============================
-// ✅ Payment History (Monthly)
-// ==============================
-export interface PaymentHistory {
+export interface Payment {
   id: number;
-  roomFee: number;
-  messFee: number;
-  totalFee: number;
-  paymentStatus: 'PAID' | 'PENDING';
-  paymentDate?: string;
-  month: number;
-  year: number;
+  amount: number;
+  type: 'ROOM' | 'MESS';
+  status: 'SUCCESS' | 'FAILED';
+  paymentDate: string;
 }
 
 @Injectable({
@@ -36,31 +20,46 @@ export interface PaymentHistory {
 export class PaymentService {
 
   private baseUrl = 'http://localhost:8080/api/payments';
+  private adminUrl = 'http://localhost:8080/api/admin/payments';
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Student Fee
-  getFeeDetails(userId: number): Observable<FeeDetails | null> {
-    return this.http.get<FeeDetails>(`${this.baseUrl}/fee/${userId}`).pipe(
-      catchError(() => of(null))
+  // =========================
+  // 💰 PAY ROOM FEE
+  // =========================
+  payRoomFee(userId: number): Observable<Payment> {
+    return this.http.post<Payment>(
+      `${this.baseUrl}/room/${userId}`, {}
     );
   }
 
-  // ✅ Pay Fee
-  payFee(userId: number): Observable<FeeDetails> {
-    return this.http.post<FeeDetails>(`${this.baseUrl}/pay/${userId}`, {});
+  // =========================
+  // 🍽️ PAY MESS FEE
+  // =========================
+  payMessFee(messId: number): Observable<Payment> {
+    return this.http.post<Payment>(
+      `${this.baseUrl}/mess/${messId}`, {}
+    );
   }
 
-  // ✅ Student History
-  getPaymentHistory(userId: number): Observable<PaymentHistory[]> {
-    return this.http.get<PaymentHistory[]>(`${this.baseUrl}/history/${userId}`).pipe(
+  // =========================
+  // 📜 USER PAYMENT HISTORY
+  // =========================
+  getPaymentHistory(userId: number): Observable<Payment[]> {
+    return this.http.get<Payment[]>(
+      `${this.baseUrl}/history/${userId}`
+    ).pipe(
       catchError(() => of([]))
     );
   }
 
-  // ✅ ADMIN: Get All Payments  🔥 (FIXED)
-  getAllPayments(): Observable<PaymentHistory[]> {
-    return this.http.get<PaymentHistory[]>(`${this.baseUrl}/all`).pipe(
+  // =========================
+  // 📊 ADMIN: ALL PAYMENTS
+  // =========================
+  getAllPayments(): Observable<Payment[]> {
+    return this.http.get<Payment[]>(
+      this.adminUrl
+    ).pipe(
       catchError(() => of([]))
     );
   }

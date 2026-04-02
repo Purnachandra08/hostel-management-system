@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentService, PaymentHistory } from '../../services/payment.service';
+import { PaymentService, Payment } from '../../services/payment.service';
 
 @Component({
   selector: 'app-admin-payments',
@@ -11,7 +11,7 @@ import { PaymentService, PaymentHistory } from '../../services/payment.service';
 })
 export class AdminPaymentsComponent implements OnInit {
 
-  payments: PaymentHistory[] = [];
+  payments: Payment[] = [];
   total = 0;
 
   constructor(private service: PaymentService) {}
@@ -22,16 +22,17 @@ export class AdminPaymentsComponent implements OnInit {
 
   loadPayments() {
     this.service.getAllPayments().subscribe({
-      next: (res: PaymentHistory[]) => {
+      next: (res: Payment[]) => {
         this.payments = res;
 
-        // ✅ Calculate total revenue
+        // ✅ Total revenue (only SUCCESS payments)
         this.total = res
-          .filter(p => p.paymentStatus === 'PAID')
-          .reduce((sum, p) => sum + p.totalFee, 0);
+          .filter(p => p.status === 'SUCCESS')
+          .reduce((sum, p) => sum + p.amount, 0);
       },
       error: (err) => {
         console.error('Error loading payments', err);
+        this.payments = [];
       }
     });
   }

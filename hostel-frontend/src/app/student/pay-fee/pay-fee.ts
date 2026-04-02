@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaymentService, FeeDetails, PaymentHistory } from '../../services/payment.service';
 import { AuthService } from '../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-pay-fee',
@@ -12,71 +12,109 @@ import { AuthService } from '../../services/auth.service';
 })
 export class PayFeeComponent implements OnInit {
 
-  fee: FeeDetails | null = null;
+  booking: any = null;
+  paymentHistory: any[] = [];
+
   loading = false;
   paying = false;
+
   message: string = '';
+  error: string = '';
+
   userId!: number;
 
-  paymentHistory: PaymentHistory[] = [];
+  private bookingUrl = 'http://localhost:8080/api/bookings';
+  private paymentUrl = 'http://localhost:8080/api/payments';
 
   constructor(
-    private service: PaymentService,
+    private http: HttpClient,
     public authService: AuthService
   ) {}
 
   ngOnInit() {
     const user = this.authService.getUser();
-    if (!user) return;
+
+    if (!user) {
+      this.error = 'User not logged in';
+      return;
+    }
 
     this.userId = user.id;
-
-    this.getFee();
-    this.loadHistory();
+    this.loadAll();
   }
 
-  // ✅ Month Name Converter
-  getMonthName(month: number): string {
-    return new Date(0, month - 1).toLocaleString('en', { month: 'long' });
+  // =========================
+  // LOAD ALL DATA
+  // =========================
+  loadAll() {
+    this.getBooking();
+    this.getPaymentHistory();
   }
 
-  getFee() {
+  // =========================
+  // GET BOOKING DETAILS
+  // =========================
+  getBooking() {
     this.loading = true;
+    this.error = '';
+    this.message = '';
 
-    this.service.getFeeDetails(this.userId).subscribe({
-      next: (res) => {
-        this.fee = res;
-        this.loading = false;
-      },
-      error: () => {
-        this.message = 'No fee available';
-        this.loading = false;
-      }
-    });
+    this.http.get(`${this.bookingUrl}/student/${this.userId}`)
+      .subscribe({
+        next: (res) => {
+          this.booking = res;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.booking = null;
+          this.loading = false;
+          this.error = err?.error?.message || 'No booking found';
+        }
+      });
   }
 
+  // =========================
+  // PAY ROOM FEE
+  // =========================
   payNow() {
-    if (!this.fee || this.fee.paymentStatus === 'PAID') return;
+
+    if (!this.booking || this.booking.status === 'APPROVED') return;
 
     this.paying = true;
+    this.error = '';
+    this.message = '';
 
-    this.service.payFee(this.userId).subscribe({
-      next: () => {
-        alert('Payment Successful!');
-        this.paying = false;
-        this.getFee();
-        this.loadHistory();
-      },
-      error: () => {
-        this.paying = false;
-        alert('Payment Failed');
-      }
-    });
+    this.http.post(`${this.paymentUrl}/room/${this.userId}`, {})
+      .subscribe({
+        next: () => {
+          this.message = 'Payment successful 🎉';
+          this.paying = false;
+
+          // 🔄 Refresh data
+          this.loadAll();
+        },
+        error: (err) => {
+          this.error = err?.error?.message || 'Payment failed';
+          this.paying = false;
+        }
+      });
   }
 
-  loadHistory() {
-    this.service.getPaymentHistory(this.userId).subscribe(res => {
-      this.paymentHistory = res;
-    });
+  // =========================
+  // PAYMENT HISTORY
+  // =========================
+  getPaymentHistory() {
+    this.http.get<any[]>(`${this.paymentUrl}/history/${this.userId}`)
+      .subscribe({
+        next: (res) => this.paymentHistory = res,
+        error: () => this.paymentHistory = []
+      });
+  }
+
+  // =========================
+  // LOGOUT
+  // =========================
+  logout() {
+    this.authService.logout();
   }
 }

@@ -20,13 +20,19 @@
 <!-- 🌿 Main Content -->
 <div class="content">
 
-  <!-- Add Room Form -->
+  <!-- ➕ Add / ✏️ Edit Room Form -->
   <div class="form-container">
-    <h2>Add New Room</h2>
-    <form (ngSubmit)="addRoom()" class="room-form">
+    <h2>{{ isEditMode ? '✏️ Edit Room' : '➕ Add New Room' }}</h2>
+
+    <form (ngSubmit)="saveRoom()" class="room-form">
+
       <div class="form-group">
         <label>Room Number</label>
-        <input type="text" [(ngModel)]="newRoom.roomNumber" name="roomNumber" required placeholder="e.g. R101" />
+        <input type="text"
+               [(ngModel)]="newRoom.roomNumber"
+               name="roomNumber"
+               required
+               placeholder="e.g. R101" />
       </div>
 
       <div class="form-group">
@@ -41,22 +47,47 @@
 
       <div class="form-group">
         <label>Capacity</label>
-        <input type="number" [(ngModel)]="newRoom.capacity" name="capacity" min="1" required />
+        <input type="number"
+               [(ngModel)]="newRoom.capacity"
+               name="capacity"
+               min="1"
+               required />
       </div>
 
       <div class="form-group">
         <label>Price per Month (₹)</label>
-        <input type="number" [(ngModel)]="newRoom.pricePerMonth" name="pricePerMonth" min="0" required />
+        <input type="number"
+               [(ngModel)]="newRoom.pricePerMonth"
+               name="pricePerMonth"
+               min="0"
+               required />
       </div>
 
-      <button type="submit" class="add-btn">➕ Add Room</button>
+      <!-- ✅ Buttons -->
+      <div class="form-buttons">
+        <button type="submit" class="add-btn">
+          {{ isEditMode ? '✏️ Update Room' : '➕ Add Room' }}
+        </button>
+
+        <button *ngIf="isEditMode"
+                type="button"
+                class="cancel-btn"
+                (click)="resetForm()">
+          Cancel
+        </button>
+      </div>
+
     </form>
   </div>
 
-  <!-- Rooms Table -->
+  <!-- 📋 Rooms Table -->
   <div class="table-container">
     <h2>All Rooms</h2>
-    <table class="room-table">
+
+    <!-- ⏳ Loading -->
+    <div *ngIf="loading" class="loading">Loading rooms...</div>
+
+    <table class="room-table" *ngIf="!loading">
       <thead>
         <tr>
           <th>ID</th>
@@ -68,27 +99,44 @@
           <th>Actions</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let room of rooms">
           <td>{{ room.id }}</td>
           <td>{{ room.roomNumber }}</td>
           <td>{{ room.type }}</td>
           <td>{{ room.capacity }}</td>
-          <td>{{ room.pricePerMonth | currency:'INR':'symbol':'1.0-0' }}</td>
+
+          <td>
+            {{ room.pricePerMonth | currency:'INR':'symbol':'1.0-0' }}
+          </td>
+
+          <!-- ✅ Status Safe Handling -->
           <td>
             <span
               [ngClass]="{
-                'status-available': room.status === 'AVAILABLE',
+                'status-available': (room.status || 'AVAILABLE') === 'AVAILABLE',
                 'status-occupied': room.status === 'OCCUPIED'
               }">
-              {{ room.status }}
+              {{ room.status || 'AVAILABLE' }}
             </span>
           </td>
+
+          <!-- ✅ Actions -->
           <td>
-            <button class="delete-btn" (click)="deleteRoom(room.id)">🗑️ Delete</button>
+            <button class="edit-btn"
+                    (click)="editRoom(room)">
+              ✏️ Edit
+            </button>
+
+            <button class="delete-btn"
+                    (click)="deleteRoom(room.id)">
+              🗑️ Delete
+            </button>
           </td>
         </tr>
 
+        <!-- ❌ No Data -->
         <tr *ngIf="rooms.length === 0">
           <td colspan="7" class="no-data">No rooms found</td>
         </tr>

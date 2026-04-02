@@ -6,34 +6,32 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BookingService {
+
   private baseUrl = 'http://localhost:8080/api/bookings';
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Create a new booking
-  bookRoom(userId: number, roomId: number, bookingData: any): Observable<any> {
-    // No query params — pass IDs in request body instead (cleaner & backend-friendly)
-    const payload = {
-      userId: userId,
-      roomId: roomId,
-      startDate: bookingData.startDate,
-      endDate: bookingData.endDate
-    };
-    return this.http.post(`${this.baseUrl}/create`, payload);
+  // ✅ Book Room (MATCH BACKEND)
+  bookRoom(userId: number, roomId: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${userId}/${roomId}`, {});
   }
 
-  // ✅ Get all bookings
+  approveBooking(bookingId: number): Observable<any> {
+  return this.http.put(`${this.baseUrl}/approve/${bookingId}`, {});
+}
+
+  // ✅ Get Student Booking (CURRENT YEAR)
+  getStudentBooking(userId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/student/${userId}`);
+  }
+
+  // ✅ Get All Bookings (ADMIN)
   getAllBookings(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/all`);
+    return this.http.get(`${this.baseUrl}`);
   }
 
-  // ✅ Cancel booking
+  // ✅ Cancel Booking
   cancelBooking(bookingId: number): Observable<any> {
-    return this.http.put(`${this.baseUrl}/cancel/${bookingId}`, {});
-  }
-
-  // ✅ Get booking by user ID
-  getBookingsByUser(userId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/user/${userId}`);
+    return this.http.put(`${this.baseUrl}/${bookingId}/cancel`, {});
   }
 }

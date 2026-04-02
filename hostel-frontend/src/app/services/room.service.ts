@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class RoomService {
+
   private baseUrl = 'http://localhost:8080/api/rooms';
 
   constructor(private http: HttpClient) {}
@@ -13,18 +14,23 @@ export class RoomService {
     return this.http.get<any[]>(this.baseUrl);
   }
 
-  // ✅ Get only available rooms
+  // ✅ Get available rooms
   getAvailableRooms(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/available`);
   }
 
-  // ✅ Add a new room
+  // ✅ Add room
   addRoom(room: any): Observable<any> {
     return this.http.post<any>(this.baseUrl, room);
   }
 
-  // ✅ Delete a room by ID
-  deleteRoom(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  // ✅ Update room
+  updateRoom(id: number, room: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, room);
+  }
+
+  // ✅ Delete room
+  deleteRoom(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`);
   }
 }
