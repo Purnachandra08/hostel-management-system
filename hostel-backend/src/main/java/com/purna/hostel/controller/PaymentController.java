@@ -55,12 +55,4 @@ public class PaymentController {
     public ResponseEntity<List<Payment>> getUserPayments(@PathVariable Long userId) {
         return ResponseEntity.ok(paymentService.getUserPayments(userId));
     }
-
-    // =========================
-    // 📊 ADMIN: ALL PAYMENTS
-    // =========================
-    @GetMapping
-    public ResponseEntity<List<Payment>> getAllPayments() {
-        return ResponseEntity.ok(paymentService.getAllPayments());
-    }
 }

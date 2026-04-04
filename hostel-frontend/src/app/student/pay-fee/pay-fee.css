@@ -71,40 +71,59 @@ body {
 /* ================= MAIN ================= */
 .main-container {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  grid-template-columns: 1fr 1fr;
   gap: 25px;
-  padding: 110px 8% 60px;
+  padding: 110px 8% 40px;
 }
 
-/* ================= LEFT ================= */
-.pay-section {
+/* ================= SECTIONS ================= */
+.pay-section,
+.history-section {
   background: rgba(255, 255, 255, 0.95);
   padding: 25px;
   border-radius: 20px;
   box-shadow: 0 6px 20px rgba(34, 197, 94, 0.15);
 }
 
-.pay-section h2 {
+.pay-section h2,
+.history-section h3 {
   text-align: center;
   color: #14532d;
 }
 
-/* LOADING */
+/* ================= FULL WIDTH SECTION (MESS) ================= */
+.full-width {
+  grid-column: span 2;
+}
+
+/* ================= LOADING ================= */
 .loading {
   text-align: center;
   color: #16a34a;
   margin-top: 20px;
 }
 
-/* ERROR */
-.error {
+/* ================= MESSAGE BOX ================= */
+.success-msg {
   text-align: center;
-  color: #dc2626;
-  margin-top: 20px;
-  font-weight: 500;
+  color: #166534;
+  background: #dcfce7;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-weight: 600;
 }
 
-/* CARD */
+.error-msg {
+  text-align: center;
+  color: #991b1b;
+  background: #fee2e2;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* ================= CARD ================= */
 .card {
   margin-top: 20px;
   padding: 25px;
@@ -114,7 +133,7 @@ body {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* STATUS */
+/* ================= STATUS ================= */
 .status {
   display: inline-block;
   margin-top: 10px;
@@ -124,47 +143,11 @@ body {
   font-weight: 600;
 }
 
-.pending {
-  background: #f59e0b;
-}
+.pending { background: #f59e0b; }
+.approved { background: #16a34a; }
+.cancelled { background: #dc2626; }
 
-.approved {
-  background: #16a34a;
-}
-
-.cancelled {
-  background: #dc2626;
-}
-
-/* WARNING */
-.warning {
-  margin-top: 10px;
-  color: #dc2626;
-  font-weight: 500;
-}
-
-/* SUCCESS TEXT */
-.success-text {
-  color: #16a34a;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-/* CANCELLED TEXT */
-.cancelled-text {
-  color: #dc2626;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-/* NO BOOKING */
-.no-booking {
-  text-align: center;
-  margin-top: 20px;
-  color: #6b7280;
-}
-
-/* PAY BUTTON */
+/* ================= BUTTON ================= */
 .pay-btn {
   margin-top: 15px;
   padding: 12px 20px;
@@ -178,42 +161,23 @@ body {
 
 .pay-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(34,197,94,0.4);
 }
 
-.pay-btn:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-/* ================= RIGHT ================= */
-.history-section {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.15);
-}
-
-.history-section h3 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #14532d;
-}
-
-/* TABLE */
+/* ================= TABLE ================= */
 table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
 th {
   background: #16a34a;
   color: white;
-  padding: 10px;
+  padding: 12px;
 }
 
 td {
-  padding: 10px;
+  padding: 12px;
   text-align: center;
 }
 
@@ -225,25 +189,26 @@ tr:hover {
   background: #dcfce7;
 }
 
-/* PAYMENT STATUS IN TABLE */
-.success {
+/* ================= STATUS COLORS ================= */
+.status-success {
   color: #16a34a;
   font-weight: bold;
 }
 
-.failed {
+.status-failed {
   color: #dc2626;
   font-weight: bold;
 }
 
-/* EMPTY STATE */
-.no-history {
+/* ================= EMPTY ================= */
+.no-history,
+.no-booking {
   text-align: center;
   margin-top: 20px;
   color: #6b7280;
 }
 
-/* FOOTER */
+/* ================= FOOTER ================= */
 .footer {
   text-align: center;
   padding: 12px;
@@ -258,8 +223,7 @@ tr:hover {
     grid-template-columns: 1fr;
   }
 
-  .navbar-container {
-    flex-direction: column;
-    gap: 10px;
+  .full-width {
+    grid-column: span 1;
   }
 }

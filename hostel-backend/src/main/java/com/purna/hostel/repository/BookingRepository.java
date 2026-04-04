@@ -43,6 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByUser_IdAndAcademicYearAndIsActiveTrue(Long userId, String academicYear);
 
     List<Booking> findByAcademicYear(String academicYear);
+    List<Booking> findAllByUser_IdAndIsActiveTrue(Long userId);
 
     // =========================
     // 🔥 ROOM CAPACITY LOGIC

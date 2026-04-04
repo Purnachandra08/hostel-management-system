@@ -32,8 +32,23 @@ export class BookRoom implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadAll();
+  }
+
+  // =========================
+  // LOAD ALL DATA
+  // =========================
+  loadAll() {
     this.loadAvailableRooms();
     this.loadStudentBooking();
+  }
+
+  // =========================
+  // CLEAR MESSAGES
+  // =========================
+  clearMessages() {
+    this.message = '';
+    this.error = '';
   }
 
   // =========================
@@ -41,7 +56,7 @@ export class BookRoom implements OnInit {
   // =========================
   loadAvailableRooms(): void {
     this.roomService.getAvailableRooms().subscribe({
-      next: (data) => this.rooms = data,
+      next: (data) => this.rooms = data || [],
       error: () => this.error = 'Failed to load rooms'
     });
   }
@@ -71,16 +86,14 @@ export class BookRoom implements OnInit {
     }
 
     this.loading = true;
-    this.error = '';
-    this.message = '';
+    this.clearMessages();
 
     this.http.post(`${this.bookingBaseUrl}/${user.id}/${roomId}`, {})
       .subscribe({
         next: (res: any) => {
-          this.message = res.message || 'Booking created';
-          this.loadStudentBooking();
-          this.loadAvailableRooms();
+          this.message = res.message || 'Booking created successfully';
           this.loading = false;
+          this.loadAll();
         },
         error: (err) => {
           this.error = err?.error?.message || 'Booking failed';
@@ -97,14 +110,20 @@ export class BookRoom implements OnInit {
     const user = this.authService.getUser();
     if (!user) return;
 
+    if (this.studentBooking?.status === 'APPROVED') {
+      this.error = 'Already paid';
+      return;
+    }
+
     this.loading = true;
+    this.clearMessages();
 
     this.http.post(`${this.paymentBaseUrl}/room/${user.id}`, {})
       .subscribe({
         next: () => {
           this.message = 'Payment successful 🎉';
-          this.loadStudentBooking();
           this.loading = false;
+          this.loadAll();
         },
         error: (err) => {
           this.error = err?.error?.message || 'Payment failed';

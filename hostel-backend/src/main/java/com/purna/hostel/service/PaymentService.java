@@ -6,8 +6,8 @@ import com.purna.hostel.service.email.EmailService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,28 +24,40 @@ public class PaymentService {
     private BookingRepository bookingRepository;
 
     @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
     private EmailService emailService;
 
     // =========================
-    // 🔥 GET ACTIVE BOOKING
+    // 🔥 FIXED: GET ACTIVE BOOKING (NO ERROR)
     // =========================
     private Booking getActiveBooking(Long userId) {
-        return bookingRepository.findByUser_IdAndIsActiveTrue(userId)
-                .orElseThrow(() -> new RuntimeException("No active booking found"));
+
+        List<Booking> bookings =
+                bookingRepository.findAllByUser_IdAndIsActiveTrue(userId);
+
+        if (bookings.isEmpty()) {
+            throw new RuntimeException("No active booking found");
+        }
+
+        return bookings.get(0); // ✅ FIX: avoid "non-unique result"
     }
 
     // =========================
     // 🏠 ROOM PAYMENT
     // =========================
+    @Transactional
     public Payment payRoomFee(Long userId) {
 
         Booking booking = getActiveBooking(userId);
 
+        // ✅ FIX: handle correct statuses
         if (!"PENDING".equalsIgnoreCase(booking.getStatus())) {
-            throw new RuntimeException("Booking already processed");
+            throw new RuntimeException("Booking already processed or paid");
         }
 
-        // ❌ Prevent duplicate payment
+        // ❌ FIX: avoid duplicate payment
         if (paymentRepository.existsByReferenceId(booking.getId())) {
             throw new RuntimeException("Room fee already paid");
         }
@@ -60,9 +72,14 @@ public class PaymentService {
         payment.setStatus("SUCCESS");
         payment.setTransactionId(UUID.randomUUID().toString());
 
+        // ❌ REMOVE manual date (handled by @PrePersist)
+        // payment.setPaymentDate(LocalDateTime.now());
+
         Payment saved = paymentRepository.save(payment);
 
+        // =========================
         // ✅ APPROVE BOOKING
+        // =========================
         booking.setStatus("APPROVED");
 
         Room room = booking.getRoom();
@@ -72,12 +89,17 @@ public class PaymentService {
             room.setStatus("FULL");
         }
 
+        roomRepository.save(room);
         bookingRepository.save(booking);
 
-        // ✅ CREATE MESS FEES (12 months)
-        createYearlyMessFees(userId, booking.getAcademicYear(), 3000); // you can make dynamic
+        // =========================
+        // ✅ CREATE MESS FEES
+        // =========================
+        createYearlyMessFees(userId, booking.getAcademicYear(), 3000);
 
+        // =========================
         // 📧 EMAIL
+        // =========================
         try {
             emailService.sendPaymentSuccessEmail(
                     booking.getUser().getEmail(),
@@ -95,6 +117,7 @@ public class PaymentService {
     // =========================
     // 🍽️ PAY MESS FEE
     // =========================
+    @Transactional
     public Payment payMessFee(Long messFeeId) {
 
         MessFee mess = messFeeRepository.findById(messFeeId)
@@ -124,7 +147,7 @@ public class PaymentService {
     // 📜 HISTORY
     // =========================
     public List<Payment> getUserPayments(Long userId) {
-        return paymentRepository.findByUserIdOrderByPaymentDateDesc(userId);
+        return paymentRepository.findAllByUserIdOrderByPaymentDateDesc(userId);
     }
 
     public List<Payment> getAllPayments() {
@@ -136,7 +159,7 @@ public class PaymentService {
     // =========================
     public void createYearlyMessFees(Long userId, String academicYear, double amount) {
 
-        int year = LocalDateTime.now().getYear();
+        int year = java.time.LocalDate.now().getYear();
 
         for (int i = 1; i <= 12; i++) {
 

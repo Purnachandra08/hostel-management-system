@@ -18,7 +18,7 @@ public class AdminController {
     private PaymentService paymentService;
 
     // =========================
-    // 📊 GET ALL PAYMENTS
+    // 📊 GET ALL PAYMENTS (ADMIN)
     // =========================
     @GetMapping("/payments")
     public ResponseEntity<List<Payment>> getAllPayments() {

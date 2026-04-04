@@ -1,6 +1,23 @@
+<!-- 🌿 NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-container">
+
+    <div class="logo">🏨 HostelEase Admin</div>
+
+    <div class="nav-links">
+      <a routerLink="/admin">Dashboard</a>
+      <a routerLink="/admin/payments" class="active">Payments</a>
+    </div>
+
+    <button class="logout" (click)="logout()">Logout</button>
+
+  </div>
+</nav>
+
+<!-- 🌿 MAIN -->
 <div class="container">
 
-  <h2>💰 Admin Payment Management</h2>
+  <h2>💰 Payment Management</h2>
 
   <!-- 💰 TOTAL -->
   <div class="total-card">
@@ -9,44 +26,49 @@
   </div>
 
   <!-- 📊 TABLE -->
-  <table *ngIf="payments.length > 0">
+  <div class="table-container" *ngIf="payments.length > 0">
 
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Amount</th>
-        <th>Type</th>
-        <th>Status</th>
-        <th>Date</th>
-      </tr>
-    </thead>
+    <table>
 
-    <tbody>
-      <tr *ngFor="let p of payments">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Amount</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
 
-        <td>{{ p.id }}</td>
+      <tbody>
+        <tr *ngFor="let p of payments">
 
-        <td>₹{{ p.amount }}</td>
+          <td>{{ p.id }}</td>
+          <td>{{ p.userId }}</td>
+          <td>₹{{ p.amount }}</td>
+          <td>{{ p.type }}</td>
 
-        <td>{{ p.type }}</td>
+          <td>
+            <span class="badge"
+              [ngClass]="{
+                'success-badge': p.status === 'SUCCESS',
+                'failed-badge': p.status === 'FAILED'
+              }">
+              {{ p.status }}
+            </span>
+          </td>
 
-        <td>
-          <span [ngClass]="{
-            'success': p.status === 'SUCCESS',
-            'failed': p.status === 'FAILED'
-          }">
-            {{ p.status }}
-          </span>
-        </td>
+          <td>
+            {{ p.paymentDate ? (p.paymentDate | date:'medium') : '—' }}
+          </td>
 
-        <td>
-          {{ p.paymentDate | date:'medium' }}
-        </td>
+        </tr>
+      </tbody>
 
-      </tr>
-    </tbody>
+    </table>
 
-  </table>
+  </div>
 
   <!-- ❌ EMPTY -->
   <div *ngIf="payments.length === 0" class="no-data">
@@ -54,3 +76,8 @@
   </div>
 
 </div>
+
+<!-- 🌿 FOOTER -->
+<footer class="footer">
+  © 2026 HostelEase Admin Panel
+</footer>

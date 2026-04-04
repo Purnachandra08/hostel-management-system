@@ -23,13 +23,22 @@ public class Payment {
 
     private String transactionId;
 
-    private LocalDateTime paymentDate = LocalDateTime.now();
+    private LocalDateTime paymentDate;
+
+    // ======================
+    // AUTO SET DATE BEFORE SAVE
+    // ======================
+    @PrePersist
+    protected void onCreate() {
+        this.paymentDate = LocalDateTime.now();
+    }
 
     // ======================
     // GETTERS & SETTERS
     // ======================
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; } // ✅ added
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
@@ -50,4 +59,5 @@ public class Payment {
     public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 
     public LocalDateTime getPaymentDate() { return paymentDate; }
+    public void setPaymentDate(LocalDateTime paymentDate) { this.paymentDate = paymentDate; } // ✅ added
 }

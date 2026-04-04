@@ -14,6 +14,7 @@ export class PayFeeComponent implements OnInit {
 
   booking: any = null;
   paymentHistory: any[] = [];
+  messFees: any[] = [];
 
   loading = false;
   paying = false;
@@ -25,6 +26,7 @@ export class PayFeeComponent implements OnInit {
 
   private bookingUrl = 'http://localhost:8080/api/bookings';
   private paymentUrl = 'http://localhost:8080/api/payments';
+  private messFeeUrl = 'http://localhost:8080/api/mess-fees';
 
   constructor(
     private http: HttpClient,
@@ -44,20 +46,20 @@ export class PayFeeComponent implements OnInit {
   }
 
   // =========================
-  // LOAD ALL DATA
+  // LOAD ALL
   // =========================
   loadAll() {
     this.getBooking();
     this.getPaymentHistory();
+    this.getMessFees();
   }
 
   // =========================
-  // GET BOOKING DETAILS
+  // GET BOOKING
   // =========================
   getBooking() {
     this.loading = true;
-    this.error = '';
-    this.message = '';
+    this.clearMessages();
 
     this.http.get(`${this.bookingUrl}/student/${this.userId}`)
       .subscribe({
@@ -65,32 +67,36 @@ export class PayFeeComponent implements OnInit {
           this.booking = res;
           this.loading = false;
         },
-        error: (err) => {
+        error: () => {
           this.booking = null;
           this.loading = false;
-          this.error = err?.error?.message || 'No booking found';
         }
       });
   }
 
   // =========================
-  // PAY ROOM FEE
+  // PAY ROOM
   // =========================
   payNow() {
 
-    if (!this.booking || this.booking.status === 'APPROVED') return;
+    if (!this.booking) {
+      this.error = 'No booking found';
+      return;
+    }
+
+    if (this.booking.status === 'APPROVED') {
+      this.error = 'Already paid';
+      return;
+    }
 
     this.paying = true;
-    this.error = '';
-    this.message = '';
+    this.clearMessages();
 
     this.http.post(`${this.paymentUrl}/room/${this.userId}`, {})
       .subscribe({
         next: () => {
           this.message = 'Payment successful 🎉';
           this.paying = false;
-
-          // 🔄 Refresh data
           this.loadAll();
         },
         error: (err) => {
@@ -106,14 +112,72 @@ export class PayFeeComponent implements OnInit {
   getPaymentHistory() {
     this.http.get<any[]>(`${this.paymentUrl}/history/${this.userId}`)
       .subscribe({
-        next: (res) => this.paymentHistory = res,
-        error: () => this.paymentHistory = []
+        next: (res) => {
+          this.paymentHistory = (res || []).filter(p =>
+            p.amount > 0 && p.type && p.status
+          );
+        },
+        error: () => {
+          this.paymentHistory = [];
+        }
       });
   }
 
   // =========================
-  // LOGOUT
+  // GET MESS FEES
   // =========================
+  getMessFees() {
+    this.http.get<any[]>(`${this.messFeeUrl}/${this.userId}`)
+      .subscribe({
+        next: (res) => {
+          this.messFees = (res || []).sort((a, b) => a.month - b.month);
+        },
+        error: () => {
+          this.messFees = [];
+        }
+      });
+  }
+
+  // =========================
+  // PAY MESS
+  // =========================
+  payMess(messId: number) {
+
+    this.paying = true;
+    this.clearMessages();
+
+    this.http.post(`${this.paymentUrl}/mess/${messId}`, {})
+      .subscribe({
+        next: () => {
+          this.message = 'Mess fee paid successfully 🍽️';
+          this.paying = false;
+          this.loadAll();
+        },
+        error: (err) => {
+          this.error = err?.error?.message || 'Mess payment failed';
+          this.paying = false;
+        }
+      });
+  }
+
+  // =========================
+  // MONTH NAME
+  // =========================
+  getMonthName(month: number): string {
+    const months = [
+      'January', 'February', 'March', 'April',
+      'May', 'June', 'July', 'August',
+      'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1] || '';
+  }
+
+  // =========================
+  clearMessages() {
+    this.message = '';
+    this.error = '';
+  }
+
   logout() {
     this.authService.logout();
   }

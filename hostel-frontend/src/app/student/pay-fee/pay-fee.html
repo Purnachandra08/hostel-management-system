@@ -18,24 +18,16 @@
 <!-- 🌿 MAIN -->
 <div class="main-container">
 
-  <!-- ============================= -->
-  <!-- 🏠 BOOKING DETAILS -->
-  <!-- ============================= -->
+  <!-- ================= ROOM PAYMENT ================= -->
   <div class="pay-section">
 
     <h2>💳 Room Payment</h2>
 
-    <!-- ⏳ Loading -->
-    <div *ngIf="loading" class="loading">
-      Loading...
-    </div>
+    <div *ngIf="loading" class="loading">Loading...</div>
 
-    <!-- ❌ Error -->
-    <div *ngIf="error" class="error">
-      {{ error }}
-    </div>
+    <div *ngIf="message" class="success-msg">{{ message }}</div>
+    <div *ngIf="error" class="error-msg">{{ error }}</div>
 
-    <!-- ✅ Booking Card -->
     <div *ngIf="booking && !loading" class="card">
 
       <h3>Room: {{ booking?.room?.roomNumber }}</h3>
@@ -43,7 +35,6 @@
       <p><strong>Type:</strong> {{ booking?.room?.type }}</p>
       <p><strong>Price:</strong> ₹{{ booking?.room?.pricePerMonth }}</p>
 
-      <!-- STATUS -->
       <p class="status"
          [ngClass]="{
            'pending': booking.status === 'PENDING',
@@ -53,48 +44,31 @@
         {{ booking.status }}
       </p>
 
-      <!-- MESSAGE -->
       <p *ngIf="booking.status === 'PENDING'" class="warning">
-        ⚠️ Please complete payment to confirm your room
+        ⚠️ Please complete payment
       </p>
 
-      <!-- 💰 PAY BUTTON -->
       <button
         class="pay-btn"
         (click)="payNow()"
         [disabled]="paying || booking.status === 'APPROVED'">
-
         {{ paying ? 'Processing...' : 'Pay Room Fee' }}
       </button>
 
-      <!-- ✅ SUCCESS -->
       <p *ngIf="booking.status === 'APPROVED'" class="success-text">
         ✅ Room Confirmed
       </p>
 
-      <!-- ❌ CANCELLED -->
-      <p *ngIf="booking.status === 'CANCELLED'" class="cancelled-text">
-        ❌ Booking Cancelled
-      </p>
-
-    </div>
-
-    <!-- ❌ No Booking -->
-    <div *ngIf="!booking && !loading" class="no-booking">
-      ⚠️ No booking found. Please book a room first.
     </div>
 
   </div>
 
-  <!-- ============================= -->
-  <!-- 📜 PAYMENT HISTORY -->
-  <!-- ============================= -->
+  <!-- ================= PAYMENT HISTORY ================= -->
   <div class="history-section">
 
     <h3>🧾 Payment History</h3>
 
     <table *ngIf="paymentHistory.length > 0">
-
       <thead>
         <tr>
           <th>ID</th>
@@ -107,24 +81,70 @@
 
       <tbody>
         <tr *ngFor="let p of paymentHistory">
-
           <td>{{ p.id }}</td>
-
           <td>₹{{ p.amount }}</td>
-
           <td>{{ p.type }}</td>
 
           <td>
             <span [ngClass]="{
-              'success': p.status === 'SUCCESS',
-              'failed': p.status === 'FAILED'
+              'status-success': p.status === 'SUCCESS',
+              'status-failed': p.status === 'FAILED'
             }">
               {{ p.status }}
             </span>
           </td>
 
+          <td>{{ p.paymentDate ? (p.paymentDate | date:'medium') : '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- ================= FULL WIDTH MESS ================= -->
+  <div class="history-section full-width">
+
+    <h2>🍽️ Mess Fees</h2>
+
+    <table *ngIf="messFees.length > 0">
+
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Year</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let m of messFees">
+
+          <td>{{ getMonthName(m.month) }}</td>
+          <td>{{ m.year }}</td>
+          <td>₹{{ m.amount }}</td>
+
           <td>
-            {{ p.paymentDate | date:'medium' }}
+            <span [ngClass]="{
+              'status-success': m.status === 'PAID',
+              'status-failed': m.status === 'UNPAID'
+            }">
+              {{ m.status }}
+            </span>
+          </td>
+
+          <td>
+            <button
+              *ngIf="m.status === 'UNPAID'"
+              class="pay-btn"
+              (click)="payMess(m.id)">
+              Pay Now
+            </button>
+
+            <span *ngIf="m.status === 'PAID'" class="paid-text">
+              ✔ Paid
+            </span>
           </td>
 
         </tr>
@@ -132,9 +152,8 @@
 
     </table>
 
-    <!-- ❌ No History -->
-    <div *ngIf="paymentHistory.length === 0" class="no-history">
-      No payment history available
+    <div *ngIf="messFees.length === 0" class="no-history">
+      No mess fees available
     </div>
 
   </div>

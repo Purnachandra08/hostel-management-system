@@ -13,7 +13,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     // =========================
     List<Payment> findByUserId(Long userId);
 
-    List<Payment> findByUserIdOrderByPaymentDateDesc(Long userId);
+    // ✅ SAFE VERSION (NO ERROR)
+    List<Payment> findAllByUserIdOrderByPaymentDateDesc(Long userId);
 
     // =========================
     // TYPE BASED (ROOM / MESS)

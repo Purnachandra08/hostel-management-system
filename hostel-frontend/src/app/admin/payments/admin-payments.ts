@@ -36,4 +36,5 @@ export class AdminPaymentsComponent implements OnInit {
       }
     });
   }
+  
 }

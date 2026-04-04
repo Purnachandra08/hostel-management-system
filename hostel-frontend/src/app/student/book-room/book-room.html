@@ -1,24 +1,37 @@
 <!-- 🌿 Navbar -->
 <nav class="navbar">
-  <div class="nav-logo">🏨 Hostel Dashboard</div>
-  <button class="logout-btn" (click)="logout()">Logout</button>
+  <div class="navbar-container">
+
+    <div class="logo">🏨 HostelEase</div>
+
+    <div class="nav-links">
+      <a routerLink="/student">Dashboard</a>
+      <a routerLink="/student/book-room" class="active">Book Room</a>
+      <a routerLink="/student/pay-fee">Pay Fee</a>
+    </div>
+
+    <button class="logout" (click)="logout()">Logout</button>
+
+  </div>
 </nav>
 
-<div class="container">
+<div class="main-container">
 
   <h2>🏠 Room Booking</h2>
 
-  <!-- 🌿 Messages -->
-  <div class="messages">
-    <p class="success" *ngIf="message">{{ message }}</p>
-    <p class="error" *ngIf="error">{{ error }}</p>
+  <!-- ✅ SUCCESS -->
+  <div *ngIf="message" class="success">
+    {{ message }}
   </div>
 
-  <!-- ============================= -->
-  <!-- ⏳ Loading -->
-  <!-- ============================= -->
+  <!-- ❌ ERROR -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <!-- ⏳ LOADING -->
   <div *ngIf="loading" class="loading">
-    Processing... Please wait ⏳
+    Processing... ⏳
   </div>
 
   <!-- ============================= -->
@@ -45,12 +58,10 @@
           </span>
         </p>
 
-        <!-- ✅ BOOK BUTTON -->
         <button
           (click)="bookRoom(room.id)"
           [disabled]="loading"
-          class="book-btn"
-        >
+          class="book-btn">
           {{ loading ? 'Booking...' : 'Book Room' }}
         </button>
 
@@ -58,7 +69,6 @@
 
     </div>
 
-    <!-- ❌ No Rooms -->
     <p *ngIf="rooms.length === 0" class="no-data">
       No rooms available right now
     </p>
@@ -83,19 +93,23 @@
           'pending': studentBooking.status === 'PENDING',
           'approved': studentBooking.status === 'APPROVED',
           'cancelled': studentBooking.status === 'CANCELLED'
-        }"
-      >
+        }">
         {{ studentBooking.status }}
       </span>
     </p>
 
-    <!-- 🔥 PAY BUTTON -->
+    <!-- ⚠️ WARNING -->
+    <p *ngIf="studentBooking.status === 'PENDING'" class="warning">
+      ⚠️ Please complete payment to confirm your room
+    </p>
+
+    <!-- 💰 PAY -->
     <button
       *ngIf="studentBooking.status === 'PENDING'"
       (click)="payRoomFee()"
-      class="pay-btn"
-    >
-      💰 Pay Room Fee
+      [disabled]="loading"
+      class="pay-btn">
+      {{ loading ? 'Processing...' : 'Pay Room Fee' }}
     </button>
 
     <!-- ✅ APPROVED -->
@@ -114,5 +128,5 @@
 
 <!-- 🌿 Footer -->
 <footer class="footer">
-  © {{ currentYear }} Hostel Management System
+  © {{ currentYear }} HostelEase
 </footer>
