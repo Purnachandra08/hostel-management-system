@@ -36,5 +36,9 @@ export class AdminPaymentsComponent implements OnInit {
       }
     });
   }
+  logout() {
+  localStorage.clear(); // clear user session
+  window.location.href = '/login'; // redirect to login page
+}
   
 }

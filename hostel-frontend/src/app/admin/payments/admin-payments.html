@@ -26,7 +26,7 @@
   </div>
 
   <!-- 📊 TABLE -->
-  <div class="table-container" *ngIf="payments.length > 0">
+  <div class="table-container" *ngIf="payments && payments.length > 0">
 
     <table>
 
@@ -45,9 +45,20 @@
         <tr *ngFor="let p of payments">
 
           <td>{{ p.id }}</td>
+
+          <!-- ✅ FIXED: userId exists now -->
           <td>{{ p.userId }}</td>
+
           <td>₹{{ p.amount }}</td>
-          <td>{{ p.type }}</td>
+
+          <td>
+            <span [ngClass]="{
+              'room-type': p.type === 'ROOM',
+              'mess-type': p.type === 'MESS'
+            }">
+              {{ p.type }}
+            </span>
+          </td>
 
           <td>
             <span class="badge"
@@ -70,9 +81,9 @@
 
   </div>
 
-  <!-- ❌ EMPTY -->
-  <div *ngIf="payments.length === 0" class="no-data">
-    No payments found
+  <!-- ❌ EMPTY STATE -->
+  <div *ngIf="payments && payments.length === 0" class="no-data">
+    ❌ No payments found
   </div>
 
 </div>

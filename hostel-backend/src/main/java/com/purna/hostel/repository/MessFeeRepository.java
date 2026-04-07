@@ -21,6 +21,7 @@ public interface MessFeeRepository extends JpaRepository<MessFee, Long> {
     Optional<MessFee> findByUserIdAndMonthAndYear(Long userId, int month, int year);
 
     boolean existsByUserIdAndMonthAndYear(Long userId, int month, int year);
+    
 
     // =========================
     // STATUS FILTER
